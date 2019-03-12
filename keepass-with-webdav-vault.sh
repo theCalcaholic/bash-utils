@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 #
-# Script to mount a webdav directory via davfs (requires fstab entry!) and start keepass with 
-# a vault in said directory subsequently
+# Script to mount a network (e.g. sshfs/davfs) directory (requires fstab entry for /media/keepass!) and subsequently start keepass with 
+# a vault in said directory
 # Requires the flatpak version of KeepassXC to be installed!!!
 #
 
