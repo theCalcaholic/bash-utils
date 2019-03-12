@@ -18,7 +18,7 @@ print_usage() {
 trap print_usage 1 2
 
 expected=""
-delim=""
+delim="|"
 columns=""
 payload=""
 skip_header=0
@@ -28,7 +28,13 @@ do
 	if [ "$expected" == "delim" ]
 	then
 		delim="$arg"
-	elif [ "$arg" == "--delimiter" ] || [ "$arg" == "-d" ]
+    fi
+
+    if [ ! -z "$expected" ]
+    then
+        expected=""
+        continue
+    elif [ "$arg" == "--delimiter" ] || [ "$arg" == "-d" ]
 	then
 		expected='delim'
 	elif [ "$arg" == "--skip-header" ] || [ "$arg" == "-s" ]
@@ -52,7 +58,6 @@ do
         print_usage
         exit 1
     fi
-    expected=""
 done
 
 if [ -z "$payload" ]
@@ -72,7 +77,7 @@ for column in ${columns[@]}
 do
     payload="$(
         echo "$payload" \
-        | awk -F "|" '{
+        | awk -F "$delim" '{
             OFS="|";
             {
                 gsub(/[0-9]/, "0", $'$column')
