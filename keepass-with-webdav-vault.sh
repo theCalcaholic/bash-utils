@@ -3,8 +3,8 @@
 #
 # Script to mount a webdav directory via davfs (requires fstab entry!) and start keepass with 
 # a vault in said directory subsequently
+# Requires the flathub version of KeepassXC to be installed!!!
 #
-
 
 VAULT_PATH="/PATH/TO/YOUR/VAULT/AFTER/WEBDAV/MOUNT/"
 
