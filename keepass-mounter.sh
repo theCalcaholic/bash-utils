@@ -87,4 +87,4 @@ then
 
     cp "$mount_path/$vault_path" "$backup_dir/$backup_file"
 fi
-flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "${mount_path%/}/$vault_path" @@
+nohup flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "${mount_path%/}/$vault_path" @@ &
