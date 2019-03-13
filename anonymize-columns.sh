@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# 
+# Replaces specific columns in a csv table with generic data in the same format
+# by mapping '0-9' -> '0', 'a-z' -> 'a' and 'A-Z' -> 'A'
+#
+
 set -e
 
 print_usage() {
