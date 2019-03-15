@@ -50,6 +50,12 @@ do
         fi
     fi
 
+    if [[ ! -z $expected ]]
+    then
+        expected=""
+        continue
+    fi
+
     if [[ $arg == "-p" ]]
     then
         expected="project"
