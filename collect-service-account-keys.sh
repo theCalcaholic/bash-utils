@@ -42,8 +42,6 @@ do
     fi
 done
 
-
-
 emails="$(gcloud iam service-accounts list $project_argument --sort-by=email --format=yaml | grep email | awk '{print $2}')"
 
 while read -r line
