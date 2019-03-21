@@ -16,7 +16,10 @@ print_usage() {
     echo "  Options:"
     echo "      -b, --backup An (optional) path to store a backup of the database in"
     echo "      -m, --mount The directory to mount the remote storage into"
-    echo "      -f, --file The path to the KeePass database file relative to the mount point"
+    echo "      -f, --file  The path to your keepass vault (relative to the mount point)"
+    echo ""
+    echo "Example:"
+    echo "  keepass-mounter -m /media/myUser/keepass -f myvault.kdbx -b ~/keepass-backups"
 }
 
 trap print_usage 1 2
