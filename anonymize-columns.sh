@@ -9,7 +9,7 @@ set -e
 
 print_usage() {
     echo "USAGE:"
-    echo "  anonymize-cols [OPTIONS] columns table"
+    echo "  anonymize-columns [OPTIONS] columns table"
     echo "  columns:"
     echo "      A comma separated list of column ids to anonymize"
     echo "  table:"
