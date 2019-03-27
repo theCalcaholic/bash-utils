@@ -35,7 +35,7 @@ for arg in "$@"
 do
     if [ "$expected" == "backup" ]
     then
-        if [ "$arg" == *".kdbx" ]
+        if [[ "$arg" =~ ^.*\.kdbx$ ]]
         then
             backup_dir="$(dirname "$arg")"
             backup_file="$(basename "$arg")"
