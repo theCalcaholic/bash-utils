@@ -9,14 +9,13 @@ set -e
 
 LC_TIME=en_US.UTF-8
 
-PROJECT="YOUR-GCP-PROJECT-ID"
 
 print_usage() {
     echo "show_bucket_access [OPTIONS]"
     echo "Options:"
     echo "    -f, --fetch Fetch bucket details before printing update times. If not specified, the details need to be present in the given path (see --path)"
-    echo "    --qa Fetch buckets in clcl-core-qa instead of clcl-core-prod"
-    echo "    -p, --path  Specifies the working directory (where the bucket info files will be downloaded to/are expected to be). Default is '.'"
+    echo "    -p, --project Fetch buckets from given project"
+    echo "    -d, --dir  Specifies the working directory (where the bucket info files will be downloaded to/are expected to be). Default is '.'"
 }
 
 trap print_usage 1
@@ -27,20 +26,29 @@ fetch=0
 
 for arg in $@
 do
-	if [ "$expected" == "path" ]
+	if [ "$expected" == "dir" ]
 	then
 		path="$arg"
+    elif [ "$expected" == "project" ]
+    then
+        project="$arg"
 	fi
 
-	if [ "$arg" == "--path" ] || [ "$arg" == "-p" ]
+    if [[ ! -z "$expected" ]]
+    then
+        expected=""
+        continue
+    fi
+
+	if [ "$arg" == "--dir" ] || [ "$arg" == "-d" ]
 	then
-		expected='path'
+		expected='dir'
 	elif [ "$arg" == "--fetch" ] || [ "$arg" == "-f" ]
 	then
 		fetch=1
-	elif [ "$arg" == "--qa" ]
+	elif [ "$arg" == "--project" ] || [ "$arg" == "-p" ]
 	then
-		PROJECT=clcl-core-qa
+	    expected="project"
 	elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
     then
         print_usage
@@ -53,23 +61,28 @@ then
 	path="."
 fi
 
+if [ ! -z "$project" ]
+then
+    project_arg="-p $project"
+fi
+
 path=${path%%/}
 
 if [ "$fetch" == "1" ]
 then
-	rm "$path"/*.info
+	rm "$path"/*.info || true
 
 	echo "Fetching bucket details..."
-	for bucket in $(gsutil ls -p "$PROJECT")
+	for bucket in $(gsutil ls $project_arg)
 	do
 		echo "Fetching bucket '$bucket'..."
 		echo "  Fetching Details..."
 		bucketname=${bucket//gs:\/\//}
 		bucketname=${bucketname//\//}
-		gsutil ls -p "$PROJECT" -Lb $bucket
-		gsutil ls -p "$PROJECT" -Lb $bucket >> "$path/$bucketname.info"
+		gsutil ls $project_arg -Lb $bucket
+		gsutil ls $project_arg -Lb $bucket >> "$path/$bucketname.info"
 		echo "  Fetching file update timestamps..."
-		file_dates=$( gsutil ls -p  "$PROJECT" -l "${bucket}**" \
+		file_dates=$( gsutil ls $project_arg -l "${bucket}**" \
 			| grep -v "TOTAL: " \
 			| tr -s " " \
 			| cut -d " " -f 3 \
