@@ -9,14 +9,14 @@ set -e
 
 print_usage() {
     echo "USAGE:"
-    echo "  anonymize-columns [OPTIONS] columns table"
+    echo "  anonymize-columns [OPTIONS] columns file"
     echo "  columns:"
     echo "      A comma separated list of column ids to anonymize"
-    echo "  table:"
-    echo "      The table to anonymize in csv format"
+    echo "  file:"
+    echo "      The csv file to anonymize"
     echo ""
     echo "  Options:"
-    echo "      -d, --delimiter Delimiter to split table by"
+    echo "      -d, --delimiter <delimiter> Delimiter to split table by"
     echo "      -s, --skip-header Ignore (Don't change) first row table"
 }
 
@@ -25,8 +25,9 @@ trap print_usage 1 2
 expected=""
 delim="|"
 columns=""
-payload=""
+file=""
 skip_header=0
+batch_size=20
 
 for arg in "$@"
 do
@@ -55,43 +56,58 @@ do
         IFS=","
         read -ra columns <<< "$arg"
         IFS="$IFS_BK"
-    elif [ -z "$payload" ]
+    elif [ -z "$file" ]
     then
-        payload="$arg"
+        file="$arg"
     else
-        echo "ERROR: anonymize-cols expects exactly two positional argument! Got: '${arg:0:16}'"
+        echo "ERROR: anonymize-cols expects exactly two positional argument! Got: '${columns:0:16}' '${file:0:16}' '${arg:0:16}'"
         print_usage
         exit 1
     fi
 done
 
-if [ -z "$payload" ]
+
+#        for line in {1..16027..20}; do anonymize-columns -s -d "|" 3,4 "$(sed -n "$line,+19p" ~/Downloads/ec1200_customermasterdata_v3_20190402.tar.gz)"; done; } | tee ~/Downloads/ec1200_customermasterdata_v3_20190402_cleared.csv
+
+if [ -z "$file" ]
 then
     echo "ERROR: Missing arguments!"
     print_usage
     exit 1
 fi
 
-if [ "$skip_header" == "1" ]
-then
-    echo "$payload" | head -n 1
-    payload="$(echo "$payload" | tail -n+2)"
-fi
+#if [ "$skip_header" == "1" ]
+#then
+#    echo "$payload" | head -n 1
+#    payload="$(echo "$payload" | tail -n+2)"
+#fi
 
-for column in ${columns[@]}
+exec 5< "$file"
+
+while read line <&5
 do
-    payload="$(
-        echo "$payload" \
-        | awk -F "$delim" '{
-            OFS="|";
-            {
-                gsub(/[0-9]/, "0", $'$column')
-                gsub(/[a-z]/,"a", $'$column')
-                gsub(/[A-Z]/,"A", $'$column')
-            }
-            print
-        }'
-    )"
+    if [ "$skip_header" == "1" ]
+    then
+        skip_header=0
+        continue
+    fi
+
+    for column in ${columns[@]}
+    do
+        line="$(
+            echo "$line" \
+            | awk -F "$delim" '{
+                OFS="|";
+                {
+                    gsub(/[0-9]/, "0", $'$column')
+                    gsub(/[a-z]/,"a", $'$column')
+                    gsub(/[A-Z]/,"A", $'$column')
+                }
+                print
+            }'
+        )"
+    done
+
+    echo "$line"
 done
 
-echo "$payload"
