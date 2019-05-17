@@ -76,18 +76,13 @@ then
     exit 1
 fi
 
-#if [ "$skip_header" == "1" ]
-#then
-#    echo "$payload" | head -n 1
-#    payload="$(echo "$payload" | tail -n+2)"
-#fi
-
 exec 5< "$file"
 
 while read line <&5
 do
     if [ "$skip_header" == "1" ]
     then
+        echo "$line"
         skip_header=0
         continue
     fi
@@ -97,7 +92,7 @@ do
         line="$(
             echo "$line" \
             | awk -F "$delim" '{
-                OFS="|";
+                OFS="'$delim'";
                 {
                     gsub(/[0-9]/, "0", $'$column')
                     gsub(/[a-z]/,"a", $'$column')
