@@ -74,7 +74,7 @@ done
 
 set -e
 
-mkdir -p "$mount_path"
+mkdir -p "$mount_path" || true
 umount "$mount_path" || echo "Nothing mounted in $mount_path - no need to unmount..."
 mount "$mount_path" || {
     echo "Something went wrong while mounting the remote storage! Check if it can be reached"
@@ -84,7 +84,7 @@ mount "$mount_path" || {
 sleep 1
 if [ ! -z "$backup_dir" ]
 then
-    mkdir -p "$backup_dir"
+    mkdir -p "$backup_dir" || true
     [ -f "$backup_dir/$backup_file" ] && \
         mv "$backup_dir/$backup_file" "$backup_dir/${backup_file}.old"
 
