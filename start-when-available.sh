@@ -7,6 +7,8 @@
 URL=${1?}
 CMD=${2?}
 
+sleep 10
+
 while ! curl "$URL" &> /dev/null ;
 do
     sleep 1
