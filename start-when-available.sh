@@ -55,10 +55,20 @@ then
         echo "ERROR: 'batch' command not found! Is the at package installed?"
         exit 1
     }
-    msg="Executing on low system load: \"$0 '$url' '$cmd'\"..."
-    [[ -z "$(command -v notify-send)" ]] && notify-send "$msg" || echo "$msg"
+    echo "cmd: $cmd";
+    cmd="${cmd//\'/\\\'}"
+    cmd="${cmd//\"/\\\"}"
+    echo "cmd escaped: $cmd"
 
-    echo "$0 '$url' '$cmd'" | batch
+    batch_cmd="export DISPLAY=$DISPLAY; \"$0\" \"$url\" \"$cmd\" &"
+    msg="Executing on low system load: \"$batch_cmd\"..."
+    echo "$msg"
+    [[ -z "$(command -v notify-send)" ]] || notify-send "$msg"
+
+    echo "\"$batch_cmd\"" | cat
+    set -x
+    echo "$batch_cmd" | batch
+    set +x
     exit 0
 fi
 
