@@ -11,27 +11,28 @@
 
 print_usage() {
     echo "USAGE:"
-    echo "  keepass-mounter [OPTIONS]"
+    echo "  keepass-mounter [OPTIONS] url"
+    echo ""
+    echo "  url: The url of your network ressource (e.g. davs://my-domain.org/files/), that will be passed to 'gio mount'"
     echo ""
     echo "  Options:"
     echo "      -b, --backup An (optional) path to store a backup of the database in"
-    echo "      -m, --mount The directory to mount the remote storage into"
-    echo "      -f, --file  The path to your keepass vault (relative to the mount point)"
+    echo "      -f, --file  The path to your keepass vault (relative to the mount point). Default: database.kdbx"
     echo "      -c, --command The command for executing keepass. '--DB_PATH--' will be replaced with the path to the password database."
     echo ""
     echo "Example:"
-    echo "  keepass-mounter -m /media/myUser/keepass -f myvault.kdbx -b ~/keepass-backups"
+    echo "  keepass-mounter -f myvault.kdbx -b ~/keepass-backups"
 }
 
 trap print_usage 1 2
 
-mount_path="/media/keepass"
-vault_path="vault.kdbx"
+vault_path="database.kdbx"
 keepass_cmd_pattern='flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "--DB_PATH--" @@'
 
 expected=""
 backup_dir=""
 backup_file=""
+url=""
 
 for arg in "$@"
 do
@@ -45,9 +46,6 @@ do
             backup_dir="$arg"
         fi
         backup_dir="${backup_dir%/}"
-    elif [ "$expected" == "mount" ]
-    then
-        mount_path="${arg%/}"
     elif [ "$expected" == "file" ]
     then
         vault_path="${arg%/}"
@@ -65,9 +63,6 @@ do
     if [ "$arg" == "--backup" ] || [ "$arg" == "-b" ]
     then
         expected="backup"
-    elif [ "$arg" == "--mount" ] || [ "$arg" == "-m" ]
-    then
-        expected="mount"
     elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
     then
         print_usage
@@ -78,17 +73,46 @@ do
     elif [ "$arg" == "--command" ] || [ "$arg" == "-c" ]
     then
         expected="command"
+    elif [ -z "$url" ]
+    then
+        url="$arg"
     fi
 done
 
+if [ -z "$url" ]
+then
+    echo "ERROR: Missing parameter 'url'!"
+    print_usage
+    exit 1
+fi
+
 set -e
 
-mkdir -p "$mount_path" || true
-umount "$mount_path" || echo "Nothing mounted in $mount_path - no need to unmount..."
-mount "$mount_path" || {
+secrets_file="$HOME/.keepass-mounter/secrets"
+
+gio mount -u "${url}" || true
+
+if [ -f "$secrets_file" ]
+then
+    mount_cmd="gio mount ${url} < $secrets_file"
+else
+    mount_cmd="gio mount ${url}"
+fi
+echo "mount command is: $mount_cmd"
+bash -c "$mount_cmd" || {
     echo "Something went wrong while mounting the remote storage! Check if it can be reached"
+    sleep 2
     exit 1
 }
+
+mount_path="/run/user/$(id -u)/gvfs/$(gio info "$url" | grep -oPe '(?<=id::filesystem: ).*')"
+
+if [ ! -d "$mount_path" ]
+then
+    echo "Failed to find mount path for ressource! '${mount_path}' is not a directory."
+    sleep 2
+    exit 2
+fi
 
 sleep 1
 if [ ! -z "$backup_dir" ]
@@ -100,7 +124,6 @@ then
     cp "$mount_path/$vault_path" "$backup_dir/$backup_file"
 fi
 
-#nohup flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "${mount_path%/}/$vault_path" @@ &
 keepass_cmd="$(sed "s|--DB\_PATH--|${mount_path%/}/$vault_path|g" <<< "$keepass_cmd_pattern")"
 
 nohup bash -c "$keepass_cmd" &
