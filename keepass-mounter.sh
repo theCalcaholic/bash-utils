@@ -119,6 +119,7 @@ bash -c "$mount_cmd" || {
 
 mount_path="/run/user/$(id -u)/gvfs/$(gio info "$url" | grep -oPe '(?<=id::filesystem: ).*')"
 
+sleep 1
 if [ ! -d "$mount_path" ]
 then
     echo "Failed to find mount path for ressource! '${mount_path}' is not a directory."
