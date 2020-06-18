@@ -94,23 +94,11 @@ gio mount -u "${url}" || true
 
 if [ -f "$secrets_file" ]
 then
-    permissions="$(stat -c %a "$secrets_file")"
-    g_perms="${permissions%?}"
-    g_perms="${g_perms#?}"
-    o_perms="${permissions#??}"
-    if [[ "$g_perms" == 2 ]] || [[ "$g_perms" == 3 ]] || [[ "$g_perms" == 6 ]] || [[ "$g_perms" == 7 ]] \
-        || [[ "$o_perms" == 2 ]] || [[ "$o_perms" == 3 ]] || [[ "$o_perms" == 6 ]] || [[ "$o_perms" == 7 ]]
-    then
-        echo "ERROR: secrets file has dangerous permissions set! Refusing to continue."
-        echo "Please correct this by running 'chmod 600 $secrets_file'"
-        exit 2
-    fi
-        
     mount_cmd="gio mount ${url} < $secrets_file"
 else
     mount_cmd="gio mount ${url}"
 fi
-
+echo "mount command is: $mount_cmd"
 bash -c "$mount_cmd" || {
     echo "Something went wrong while mounting the remote storage! Check if it can be reached"
     sleep 2
