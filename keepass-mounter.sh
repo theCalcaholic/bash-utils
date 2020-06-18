@@ -84,7 +84,7 @@ done
 set -e
 
 mkdir -p "$mount_path" || true
-umount "$mount_path" || echo "Nothing mounted in $mount_path - no need to unmount..."
+fusermount -u "$mount_path" || echo "Nothing mounted in $mount_path - no need to unmount..."
 mount "$mount_path" || {
     echo "Something went wrong while mounting the remote storage! Check if it can be reached"
     exit 1
