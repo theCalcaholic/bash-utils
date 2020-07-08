@@ -9,14 +9,16 @@ print_help() {
     echo "      The location where the container image should be created (must not exist)"
     echo ""
     echo "  Options:"
-    echo "      -h, --help Print this message"
-    echo "      -s, --size The size of the container (e.g. '1G', '500MB')"
+    echo "      -h, --help   Print this message"
+    echo "      -d, --delete Remove an existing container"
+    echo "      -s, --size   The size of the container (e.g. '1G', '500MB')"
 }
 
 expected=""
 arg_mount_point=""
 arg_container=""
 arg_size=""
+DELETE=false
 
 for arg in "$@"
 do
@@ -36,6 +38,9 @@ do
     then
         print_help
         exit 0
+    elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ]
+    then
+        DELETE=true
     elif [ -z "$arg_mount_point" ]
     then
         arg_mount_point="$arg"
@@ -48,6 +53,33 @@ done
 readonly MOUNT_POINT="${arg_mount_point:-$HOME/secure_dump}"
 readonly CONTAINER="${arg_container:-$HOME/secure_dump.img}"
 readonly SIZE="${arg_size:-1G}"
+
+if [[ "$DELETE" == "true" ]]
+then
+    echo "The existing container '$CONTAINER' will be deleted! Any data still saved in it will be lost!"
+    if [[ ! -e "${CONTAINER}" ]]
+    then
+        echo "ERROR: '${CONTAINER}' could not be found! Exiting..."
+	exit 4
+    fi
+    echo "To proceed, type $(basename ${CONTAINER^^})"
+    read inp
+    if [[ "$inp" != "$(basename ${CONTAINER^^})" ]]
+    then
+        echo "Exiting (user abort)..."
+	exit 1
+    fi
+
+    set -e
+    mount | grep "${CONTAINER}" > /dev/null && umount "${CONTAINER}"
+    sudo sed -i "s|^.*${CONTAINER}.*$||g" /etc/crypttab
+    sudo sed -i "s|^.*${CONTAINER}.*$||g" /etc/fstab
+    rm "${CONTAINER}"
+
+    echo "Secure dump '${CONTAINER}' has been deleted successfully."
+
+    exit 0
+fi
 
 
 echo "We will create a secure dump crypto-container at '${MOUNT_POINT}' from container image '$CONTAINER' of size $SIZE."
@@ -74,6 +106,7 @@ then
     echo "ERROR: Container file '$CONTAINER' already exists! Exiting..."
     exit 3
 fi
+
 dd if=/dev/zero of="${CONTAINER}" bs=1 count=0 seek="${SIZE}"
 echo "done."
 echo ""
@@ -83,6 +116,8 @@ USR="$(id -un)"
 USR_ID="$(id -u)"
 
 SD_ID=1
+
+echo "Consequently, the auto mounting of the encrypted container will be set up. Please provide your password if asked."
 
 anytab_comment="### Secure Dump containers"
 
@@ -99,8 +134,6 @@ then
     echo "$anytab_comment" | sudo tee -a /etc/fstab > /dev/null
     echo "" | sudo tee -a /etc/fstab > /dev/null
 fi
-
-echo "Consequently, the auto mounting of the encrypted container will be set up. Please provide your password if asked."
 
 while [[ -n "$(grep "crypt_${USR_ID}_${SD_ID}_secure_dump" /etc/crypttab)" ]];
 do
