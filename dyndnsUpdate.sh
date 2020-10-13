@@ -9,9 +9,9 @@ domains=( \
 )
 
 urls=( \
-    "https://dynamicdns.park-your-domain.com/update?domain=your-domain.org&password=<your dyndns password>&host=" \          # base domain
-    "https://dynamicdns.park-your-domain.com/update?domain=your-domain.org&password=<your dyndns password>&host=*" \         # catch all
-    "https://dynamicdns.park-your-domain.com/update?domain=your-domain.org&password=<your dyndns password>&host=subdomain" \ # subdomain
+    "https://dynamicdns.park-your-domain.com/update?domain=${domains[0]}&password=<your dyndns password>&host=" \          # base domain
+    "https://dynamicdns.park-your-domain.com/update?domain=${domains[0]}&password=<your dyndns password>&host=*" \         # catch all
+    "https://dynamicdns.park-your-domain.com/update?domain=${domains[0]}&password=<your dyndns password>&host=subdomain" \ # subdomain
     # Add more subdomains here
 )
 
@@ -29,24 +29,19 @@ echo
 echo logfile is $logfile
 echo timestamp is $timestamp
 
+my_ip="$(dig @resolver1.opendns.com myip.opendns.com +short)"
 
 for i in $(seq 0 $((${#domains[@]} - 1)))
 do
     echo ${domains[$i]}
-    #echo "request is: " ${urls[$i]}
-    ip=$(host ${domains[i]} \
-        | grep 'has address' \
-        | sed "s/.* has address //g")
-    if [ -z "$ip" ] \
-        || [ -z "$(curl --head $ip --connect-timeout 5)" ]
+    ip="$(dig @resolver1.opendns.com "${domains[$i]}" +short)"
+    if [[ "$ip" != "$my_ip" ]]
     then
-        echo -e "\n$timestamp:: updating IP for ${domains[$i]}" >> $logfile
-        echo -e "\n$timestamp:: updating IP for ${domains[$i]}"
-        curl ${urls[$i]} >> $logfile
-        echo  >> $logfile
+        echo -e "\n$timestamp:: updating IP for ${domains[$i]}" | tee $logfile
+        curl ${urls[$i]} | tee $logfile
+        echo "" | tee $logfile
     else
-        echo -e "\n$timestamp:: skipping update of ${domains[$i]} - is accessible." >> $logfile
-        echo -e "\n$timestamp:: skipping update of ${domains[$i]} - is accessible."
+        echo -e "\n$timestamp:: skipping update of ${domains[$i]} - ip matches." | tee $logfile
     fi
 done
 
