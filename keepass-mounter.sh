@@ -1,93 +1,57 @@
 #!/usr/bin/env bash
 
-#
-# Script to mount a network (e.g. sshfs/davfs) directory and subsequently start keepass with 
-# a vault in said directory
-#
-# Requires 
-#   - the flatpak version of KeepassXC to be installed (or whatever version is passed via the -c argument)
-#   - an fstab entry for the desired mount point
-#
 
-print_usage() {
-    echo "USAGE:"
-    echo "  keepass-mounter [OPTIONS]"
-    echo ""
-    echo "  Options:"
-    echo "      -b, --backup An (optional) path to store a backup of the database in"
-    echo "      -m, --mount The directory to mount the remote storage into"
-    echo "      -f, --file  The path to your keepass vault (relative to the mount point)"
-    echo "      -c, --command The command for executing keepass. '--DB_PATH--' will be replaced with the path to the password database."
-    echo ""
-    echo "Example:"
-    echo "  keepass-mounter -m /media/myUser/keepass -f myvault.kdbx -b ~/keepass-backups"
-}
+DESCRIPTION="Script to mount a network (e.g. sshfs/davfs) directory and subsequently start keepass with a vault in said directory
 
-trap print_usage 1 2
+Requires 
+  - the flatpak version of KeepassXC to be installed (or whatever version is passed via the -c argument)
+  - an fstab entry for the desired mount point (using davfs2)"
 
-mount_path="/media/keepass"
-vault_path="vault.kdbx"
-keepass_cmd_pattern='flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "--DB_PATH--" @@'
+USAGE="keepass-mounter.sh mount-point db-file [OPTIONS]
 
-expected=""
-backup_dir=""
-backup_file=""
+  mount-point The directory to mount the remote storage into
+  db-file     The path to your keepass vault (relative to the mount point)
 
-for arg in "$@"
-do
-    if [ "$expected" == "backup" ]
-    then
-        if [[ "$arg" =~ ^.*\.kdbx$ ]]
-        then
-            backup_dir="$(dirname "$arg")"
-            backup_file="$(basename "$arg")"
-        else
-            backup_dir="$arg"
-        fi
-        backup_dir="${backup_dir%/}"
-    elif [ "$expected" == "mount" ]
-    then
-        mount_path="${arg%/}"
-    elif [ "$expected" == "file" ]
-    then
-        vault_path="${arg%/}"
-    elif [ "$expected" == "command" ]
-    then
-        keepass_cmd_pattern="$arg"
-    fi
+  Options:
+      -b, --backup  A path for storing a database backup
+      -c, --command The command for executing keepass (defaults to the flatpak version of keepass).
+                    '--DB_PATH--' will be replaced with the path to the password database.
 
-    if [ ! -z "$expected" ]
-    then
-        expected=""
-        continue
-    fi
-
-    if [ "$arg" == "--backup" ] || [ "$arg" == "-b" ]
-    then
-        expected="backup"
-    elif [ "$arg" == "--mount" ] || [ "$arg" == "-m" ]
-    then
-        expected="mount"
-    elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
-    then
-        print_usage
-        exit 0
-    elif [ "$arg" == "--file" ] || [ "$arg" == "-f" ]
-    then
-        expected="file"
-    elif [ "$arg" == "--command" ] || [ "$arg" == "-c" ]
-    then
-        expected="command"
-    fi
-done
+Example:
+  keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups"
 
 set -e
+. "$(dirname "$0")/lib/parse_args.sh"
+set_trap 1 2
+KEYWORDS=("-b" "--backup" "-c" "--command")
+parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+
+mount_path="${ARGS[0]?}"
+mount_path="${mount_path%/}"
+vault_path="${ARGS[1]?}"
+
+keepass_cmd_pattern='flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "--DB_PATH--" @@'
+keepass_cmd_pattern="${KW_ARGS["-c"]-$keepass_cmd_pattern}"
+keepass_cmd_pattern="${KW_ARGS["--command"]-$keepass_cmd_pattern}"
+
+backup_path=""
+backup_path="${KW_ARGS["-b"]-$backup_path}"
+backup_path="${KW_ARGS["--backup"]-$backup_path}"
+if [[ "$backup_path" =~ ^.*\.kdbx$ ]]
+then
+  backup_dir="$(dirname "$backup_path")"
+  backup_file="$(basename "$backup_path")"
+elif [[ -n "$backup_path" ]]
+then
+  backup_dir="$backup_path"
+fi
+
 
 mkdir -p "$mount_path" || true
 fusermount -u "$mount_path" || echo "Nothing mounted in $mount_path - no need to unmount..."
 mount "$mount_path" || {
     echo "Something went wrong while mounting the remote storage! Check if it can be reached"
-    exit 1
+    exit 3
 }
 
 sleep 1

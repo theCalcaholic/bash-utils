@@ -1,23 +1,24 @@
 #! /usr/bin/env bash
 
-if [[ " $* " =~ .*(" -h "|" --help ").* ]]
-then
-  echo "DESCRIPTION:
-  Checks the download and upload rates against a given target (where an iperf daemon needs to be running) and prints it in a parseable format together with the current gateway mac address (to allow filtering for networks)"
-  echo "USAGE:
-  iperf-log.sh target username rsa-public-key-path
+DESCRIPTION="Checks the download and upload rates against a given target (where an iperf daemon needs to be running) and prints it in a parseable format together with the current gateway mac address (to allow filtering for networks)"
+USAGE="iperf-log.sh target username rsa-public-key-path
 
     target: The target IP to test up-/download rates against (requires iperf to be running on the target host)
     username: The username to use for authentication at the target host
     rsa-public-key-path: The path to the public key that will be used for encrypting the iperf credentials
 
     If the file \$HOME/iperf_pw exists, it will be expected to contain a valid iperf password for the target host. Otherwise, the script will ask for the password interactively."
-  exit 0
-fi
 
-TARGET="${1?}"
-USER="${2?}"
-PUB_KEY="${3?}"
+set -e
+. "$(dirname "$0")/lib/parse_args.sh"
+set_trap 1 2
+parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+
+
+TARGET="${ARGS[0]?}"
+USER="${ARGS[1]?}"
+PUB_KEY="${ARGS[2]?}"
+
 [[ -f "$HOME/iperf_pw" ]] && export IPERF3_PASSWORD="$(cat $HOME/iperf_pw)"
 
 upload_results="$(iperf3 -c "${TARGET}" --username "${USER}" --rsa-public-key-path "${PUB_KEY}")"
@@ -37,3 +38,4 @@ gateway_mac="$(ip neigh | grep REACHABLE | grep "$gateway_ip" | awk '{print $(NF
 
 echo "$(date --iso-8601=m)|$gateway_mac|DOWN|${download_rate}"
 echo "$(date --iso-8601=m)|$gateway_mac|UP|${upload_rate}"
+

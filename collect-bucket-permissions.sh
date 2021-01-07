@@ -20,7 +20,7 @@ Note: You need to be logged into gcloud (gcloud auth login) when executing this 
 . "$(dirname "$0")/lib/parse_args.sh"
 declare -a KEYWORDS=("-p" "--project" "-o" "--output" "--sa-project")
 set_trap 1 2
-parse_args __DESCRIPTION "" __USAGE "$USAGE" "$@"
+parse_args __USAGE "$USAGE" "$@"
 
 
 spaced_format='{ printf "%s%-SPACE_WIDTHs %s\n", "    - ", $1, $2 }'

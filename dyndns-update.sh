@@ -1,15 +1,14 @@
 #!/bin/bash
 
-if [[ " $* " =~ .*(" -h "|" --help ").* ]]
-then
-    echo "DESCRIPTION:
-  Checks for each configured dynDNS domain if it is pointing at the current ip and otherwise calls an http endpoint for updating it."
-    echo "USAGE:
-  dydnsUpdate.sh
-  (Configuration inside the script)"
-    exit 0
-fi
+DESCRIPTION="Checks for each configured dynDNS domain if it is pointing at the current ip and otherwise calls an http endpoint for updating it."
 
+USAGE="dydns-update.sh
+  (Configuration inside the script)"
+
+set -e
+. "$(dirname "$0")/lib/parse_args.sh"
+set_trap 1 2
+parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 
 
 # dummy.your-domain.org is a dummy subdomain which musn't be registered (it's used to check if the catch all rule works). Remove it if you're not using a catch all rule

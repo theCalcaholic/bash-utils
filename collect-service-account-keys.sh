@@ -4,43 +4,27 @@
 # Lists all iam service accounts and their keys
 #
 
-print_usage() {
-    echo "USAGE:"
-    echo "  collect-service-account-keys [OPTIONS]"
-    echo ""
-    echo "  Options:"
-    echo "      -p, --project project_id Use the specified project instead of your gcloud default"
-    echo ""
-    echo "Note: You need to be logged into gcloud (gcloud auth login) when executing this command!"
-}
+USAGE="USAGE:
+  collect-service-account-keys [OPTIONS]
+
+  Options:
+      -p, --project project_id Use the specified project instead of your gcloud default
+
+Note: You need to be logged into gcloud (gcloud auth login) when executing this command!"
 
 set -e
 
+. "$(dirname $0)/lib/parse_args.sh"
+set_trap 1 2
+declare -a KEYWORDS=("-p" "--project")
+parse_args __USAGE "$USAGE" "$@"
+
 project_argument=""
-expected=""
-
-for arg in $@
-do
-    if [[ $expected == "project" ]]
-    then
-        project_argument="--project=$arg"
-    fi
-
-    if [[ ! -z $expected ]]
-    then
-        expected=""
-        continue
-    fi
-
-    if [[ $arg == "-p" ]] || [[ $arg == "--project" ]]
-    then
-        expected="project"
-    elif [[ $arg == "--help" ]]
-    then
-        print_usage
-        exit 0
-    fi
-done
+if [[ -n "${KW_ARGS["-p"]}" ]] || [[ -n "${KW_ARGS["--project"]}" ]]
+then
+  project_argument="${KW_ARGS["-p"]}"
+  project_argument="--project=${KW_ARGS["--project"]-"$project_argument"}"
+fi
 
 emails="$(gcloud iam service-accounts list $project_argument --sort-by=email --format=yaml | grep email | awk '{print $2}')"
 
@@ -53,3 +37,4 @@ do
     [[ ${PIPESTATUS[1]} == 0 ]] || echo -n " []"
     echo ""
 done < <(printf "%s\n" $emails)
+
