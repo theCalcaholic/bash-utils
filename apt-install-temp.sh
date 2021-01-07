@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ " $* " =~ .*(" -h "|" --help ").* ]]
-then
-  # TODO
-  echo "DESCRIPTION"
-  echo "USAGE"
-  exit 0
-fi
+. "$(dirname "$0")/lib/parse_args.sh"
+parse_args __DESCRIPTION "Install apt packages marked as 'auto'" \
+  __USAGE "apt-install-temp package [package [...]]" "$@"
 
 
 installed_pkgs="$(dpkg -l | grep '^ii' | awk '{print $2}')"
@@ -20,6 +16,6 @@ do
 done
 
 echo "apt-get install ${installation_candidates[@]}" \
-&& apt-get install ${installation_candidates[@]} \
-&& apt-mark auto ${installation_candidates[@]}
+  && apt-get install ${installation_candidates[@]} \
+  && apt-mark auto ${installation_candidates[@]}
 

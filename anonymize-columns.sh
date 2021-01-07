@@ -14,35 +14,28 @@ columns:
 
 set -e
 
-print_usage() {
-    echo "USAGE:"
-    echo "  ${USAGE//
-/
-  }"
-}
+#print_usage() {
+#    echo "USAGE:"
+#    echo "  ${USAGE//
+#/
+#  }"
+#}
 
-print_description() {
-    echo "DESCRIPTION:
-  ${DESCRIPTION//
-/
-  }"
-}
+#print_description() {
+#    echo "DESCRIPTION:
+#  ${DESCRIPTION//
+#/
+#  }"
+#}
 
-trap "print_description; print_usage" 1 2
 
 ### ARGUMENT PARSING ###
 
 . "$(dirname "$0")/lib/parse_args.sh"
 
 declare -a KEYWORDS=("--delimiter" "-d")
-parse_args "$@"
-
-if [[ " ${ARGS[*]} " =~ .*(" --help "|" -h ").* ]]
-then
-  print_description
-  print_usage
-  exit 0
-fi
+set_trap 1 2
+parse_args __DESCRIPTION "$DESCRIPTION" __USAGE "$USAGE" "$@"
 
 skip_header=0
 pos_arg_count=2
@@ -55,7 +48,8 @@ fi
 if [[ ${#ARGS[@]} -ne $pos_arg_count ]]
 then
   echo "ERROR: anonymize-cols expects exactly two positional argument! Got: ${ARGS[*]@Q}"
-  print_usage
+  #print_usage
+  #exit 0
   exit 1
 fi
 
