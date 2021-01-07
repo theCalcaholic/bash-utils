@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [[ " $* " =~ .*(" -h "|" --help ").* ]]
+then
+  # TODO
+  echo "DESCRIPTION"
+  echo "USAGE"
+  exit 0
+fi
+
 
 installed_pkgs="$(dpkg -l | grep '^ii' | awk '{print $2}')"
 declare installation_candidates
