@@ -1,80 +1,71 @@
 #!/usr/bin/env bash
 
-# 
-# Replaces specific columns in a csv table with generic data in the same format
-# by mapping '0-9' -> '0', 'a-z' -> 'a' and 'A-Z' -> 'A'
-#
+export DESCRIPTION="Replaces specific columns in a csv table with generic data in the same format
+by mapping '0-9' -> '0', 'a-z' -> 'a' and 'A-Z' -> 'A'"
+export USAGE="anonymize-columns [OPTIONS] columns file
+columns:
+  A comma separated list of column ids to anonymize
+  file:
+  The csv file to anonymize
+
+  Options:
+    -d, --delimiter <delimiter> Delimiter to split table by
+    -s, --skip-header Ignore (Don't change) first row table"
 
 set -e
 
 print_usage() {
     echo "USAGE:"
-    echo "  anonymize-columns [OPTIONS] columns file"
-    echo "  columns:"
-    echo "      A comma separated list of column ids to anonymize"
-    echo "  file:"
-    echo "      The csv file to anonymize"
-    echo ""
-    echo "  Options:"
-    echo "      -d, --delimiter <delimiter> Delimiter to split table by"
-    echo "      -s, --skip-header Ignore (Don't change) first row table"
+    echo "  ${USAGE//
+/
+  }"
 }
 
-trap print_usage 1 2
+print_description() {
+    echo "DESCRIPTION:
+  ${DESCRIPTION//
+/
+  }"
+}
 
-expected=""
-delim="|"
-columns=""
-file=""
-skip_header=0
-batch_size=20
+trap "print_description; print_usage" 1 2
 
-for arg in "$@"
-do
-	if [ "$expected" == "delim" ]
-	then
-		delim="$arg"
-    fi
+### ARGUMENT PARSING ###
 
-    if [ ! -z "$expected" ]
-    then
-        expected=""
-        continue
-    elif [ "$arg" == "--delimiter" ] || [ "$arg" == "-d" ]
-	then
-		expected='delim'
-	elif [ "$arg" == "--skip-header" ] || [ "$arg" == "-s" ]
-	then
-		skip_header=1
-	elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
-    then
-        print_usage
-		exit 0
-    elif [ -z "$columns" ]
-    then
-        IFS_BK="$IFS"
-        IFS=","
-        read -ra columns <<< "$arg"
-        IFS="$IFS_BK"
-    elif [ -z "$file" ]
-    then
-        file="$arg"
-    else
-        echo "ERROR: anonymize-cols expects exactly two positional argument! Got: '${columns:0:16}' '${file:0:16}' '${arg:0:16}'"
-        print_usage
-        exit 1
-    fi
-done
+. "$(dirname "$0")/lib/parse_args.sh"
 
+declare -a KEYWORDS=("--delimiter" "-d")
+parse_args "$@"
 
-#        for line in {1..16027..20}; do anonymize-columns -s -d "|" 3,4 "$(sed -n "$line,+19p" ~/Downloads/ec1200_customermasterdata_v3_20190402.tar.gz)"; done; } | tee ~/Downloads/ec1200_customermasterdata_v3_20190402_cleared.csv
-
-if [ -z "$file" ]
+if [[ " ${ARGS[*]} " =~ .*(" --help "|" -h ").* ]]
 then
-    echo "ERROR: Missing arguments!"
-    print_usage
-    exit 1
+  print_description
+  print_usage
+  exit 0
 fi
+
+skip_header=0
+pos_arg_count=2
+if [[ " ${ARGS[*]} " =~ .*(" --skip-header "|" -s ").* ]]
+then
+  skip_header=1
+  pos_arg_count=3
+fi
+
+if [[ ${#ARGS[@]} -ne $pos_arg_count ]]
+then
+  echo "ERROR: anonymize-cols expects exactly two positional argument! Got: ${ARGS[*]@Q}"
+  print_usage
+  exit 1
+fi
+
+
+columns="${ARGS[0]}"
+file="${ARGS[1]}"
+delim="${KW_ARGS["-d"]-"|"}"
+delim="${KW_ARGS["--delimiter"]-"$delim"}"
+
+######
 
 exec 5< "$file"
 

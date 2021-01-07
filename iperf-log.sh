@@ -1,5 +1,20 @@
 #! /usr/bin/env bash
 
+if [[ " $* " =~ .*(" -h "|" --help ").* ]]
+then
+  echo "DESCRIPTION:
+  Checks the download and upload rates against a given target (where an iperf daemon needs to be running) and prints it in a parseable format together with the current gateway mac address (to allow filtering for networks)"
+  echo "USAGE:
+  iperf-log.sh target username rsa-public-key-path
+
+    target: The target IP to test up-/download rates against (requires iperf to be running on the target host)
+    username: The username to use for authentication at the target host
+    rsa-public-key-path: The path to the public key that will be used for encrypting the iperf credentials
+
+    If the file \$HOME/iperf_pw exists, it will be expected to contain a valid iperf password for the target host. Otherwise, the script will ask for the password interactively."
+  exit 0
+fi
+
 TARGET="${1?}"
 USER="${2?}"
 PUB_KEY="${3?}"
