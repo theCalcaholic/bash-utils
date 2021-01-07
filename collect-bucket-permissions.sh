@@ -7,73 +7,64 @@
 
 set -e
 
-print_usage() {
-    echo "USAGE:"
-    echo "  collect-bucket-permissions [OPTIONS]"
-    echo ""
-    echo "  Options:"
-    echo "      -p, --project project_id Use the specified project instead of your gcloud default"
-    echo "      -o, --output format Change output format. Can be one of 'yaml', 'spaced', 'spaced-40', 'spaced-80' and 'spaced-120'"
-    echo "      --sa-project For service accounts also print the project which contains it (given the permissions)"
-    echo ""
-    echo "Note: You need to be logged into gcloud (gcloud auth login) when executing this command!"
-}
+USAGE="USAGE:
+  collect-bucket-permissions [OPTIONS]
+
+  Options:
+      -p, --project project_id Use the specified project instead of your gcloud default
+      -o, --output format Change output format. Can be one of 'yaml', 'spaced', 'spaced-40', 'spaced-80' and 'spaced-120'
+      --sa-project For service accounts also print the project which contains it (given the permissions)
+
+Note: You need to be logged into gcloud (gcloud auth login) when executing this command!"
+
+. "$(dirname "$0")/lib/parse_args.sh"
+declare -a KEYWORDS=("-p" "--project" "-o" "--output" "--sa-project")
+set_trap 1 2
+parse_args __DESCRIPTION "" __USAGE "$USAGE" "$@"
+
 
 spaced_format='{ printf "%s%-SPACE_WIDTHs %s\n", "    - ", $1, $2 }'
 yaml_format='{ printf "%s\n%s%s\"\n%s\"%s\n", "    -", "      member: ", $1, "      role: ", $2 }'
 yaml_format_with_pid='{ printf "%s\n%s%s\"\n%s\"%s\n%s\"%s\"\n", "    -", "      member: ", $1, "      role: ", $2, "      project: ", $3 }'
 format='{ print "    - ", $1, $2 }'
+
 show_sa_projects=0
+if [[ " ${ARGS[*]} " =~ .*"--sa-project".* ]]
+then
+  show_sa_projects=1
+fi
+
 project_arg=""
+if [[ -n "${KW_ARGS["-p"-""]}" ]] || [[ -n "${KW_ARGS["--project"]}" ]]
+then
+  project_arg="${KW_ARGS["-p"]}"
+  project_arg="-p ${KW_ARGS["--project"]-"$project_arg"}"
+fi
 
-for arg in $@
-do
-    if [[ $expected == "project" ]]
-    then
-        project_arg="-p $arg"
-    elif [[ $expected == "output" ]]
-    then
-        if [[ $arg == "yaml" ]]
-        then
-            format="$yaml_format"
-        elif [[ $arg == "spaced" ]] || [[ $arg == "spaced-40" ]]
-        then
-            format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/39/' )"
-        elif [[ $arg == "spaced-80" ]]
-        then
-            format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/79/' )"
-        elif [[ $arg == "spaced-120" ]]
-        then
-            format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/119/' )"
-        else
-            echo "ERROR: Invalid output format '$arg'!"
-            echo ""
-            print_usage
-            exit 1
-        fi
-    fi
 
-    if [[ ! -z $expected ]]
-    then
-        expected=""
-        continue
-    fi
+format_name="${KW_ARGS["-o"]-"default"}"
+format_name="${KW_ARGS["--output"]-"$format_name"}"
+if [[ "$format_name" != "default" ]]
+then
 
-    if [[ $arg == "-p" ]] || [[ $arg == "--project" ]]
-    then
-        expected="project"
-    elif [[ $arg == "--help" ]]
-    then
-        print_usage
-        exit 0
-    elif [[ $arg == "--output" ]] || [[ $arg == "-o" ]]
-    then
-        expected="output"
-    elif [[ $arg == "--sa-project" ]]
-    then
-        show_sa_projects=1
-    fi
-done
+  if [[ $format_name == "yaml" ]]
+  then
+      format="$yaml_format"
+  elif [[ $format_name == "spaced" ]] || [[ $format_name == "spaced-40" ]]
+  then
+      format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/39/' )"
+  elif [[ $format_name == "spaced-80" ]]
+  then
+      format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/79/' )"
+  elif [[ $format_name == "spaced-120" ]]
+  then
+      format="$( echo "$spaced_format" | sed 's/SPACE_WIDTH/119/' )"
+  else
+      echo "ERROR: Invalid output format '$format_name'!"
+      exit 1
+  fi
+fi
+
 
 if [[ $show_sa_projects == 1 ]] 
 then

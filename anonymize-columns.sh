@@ -14,21 +14,6 @@ columns:
 
 set -e
 
-#print_usage() {
-#    echo "USAGE:"
-#    echo "  ${USAGE//
-#/
-#  }"
-#}
-
-#print_description() {
-#    echo "DESCRIPTION:
-#  ${DESCRIPTION//
-#/
-#  }"
-#}
-
-
 ### ARGUMENT PARSING ###
 
 . "$(dirname "$0")/lib/parse_args.sh"

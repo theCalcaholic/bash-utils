@@ -44,11 +44,11 @@ parse_args() {
 
 print_usage() {
     echo "USAGE:"
-    echo "  ${KW_ARGS[USAGE]:-'No usage message found'}"
+    echo "  ${KW_ARGS[USAGE]:-"<No usage message found>"}"
 }
 
 print_description() {
-    echo "${KW_ARGS[DESCRIPTION]:-'No usage message found'}"
+    echo "${KW_ARGS[DESCRIPTION]:-"<No description found>"}"
 }
 
 set_trap() {
