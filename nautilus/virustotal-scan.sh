@@ -32,7 +32,7 @@ if [[ "$VT_API_KEY" == "<YOUR API KEY>" ]]
 then
     setup_guide_html_plain="$(echo "$setup_guide_html" | base64 -d)"
     DATA_URL="data:text/html,${setup_guide_html_plain/\{SCRIPT_PATH\}/$0}"
-    notify-send -a "virustotal-scan.sh" "virustotal-scan has not been set up yet!" "<a href=\"$DATA_URL\">Configure it now</a>"
+    notify-send -a "virustotal-scan.sh" "virustotal-scan has not been set up yet!"
     $(xdg-open "$DATA_URL" || sensible-browser "$DATA_URL" ) &
     exit 0
 fi
@@ -63,8 +63,8 @@ do
   file_id="$(echo "$resp" | jq -r ".meta.file_info.sha256")"
 
   result_url="https://www.virustotal.com/gui/file/${file_id}/detection"
-  notify-send -a "virustotal-scan" "Scan ready for $file: $result_url" \
-  || xdg-open $result_url
+  notify-send -a "virustotal-scan" "Scan ready for $file: $result_url"
+  xdg-open $result_url
 
 done <<< "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"
 
