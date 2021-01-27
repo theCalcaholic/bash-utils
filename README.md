@@ -92,10 +92,15 @@ USAGE:
 ### exec-on-change.sh
 
 ```yaml
-<No description found>
+Execute CMD whenever a file within DIR has been changed.
 
 USAGE:
-  <No usage message found>
+  exec-on-change.sh DIR CMD [OPTIONS]
+  DIR: Path to watch for changes
+  CMD: Command to execute
+
+  OPTIONS:
+    --help, -h: Show this message
 ```
 
 ### gcp-list-projects-in-folder.sh

@@ -2,28 +2,20 @@
 
 set -e
 
-print_help() {
-    echo "Execute CMD whenever a file within DIR has been changed.
-USAGE: inotify_exec.sh DIR CMD [OPTIONS]
+DESCRIPTION="Execute CMD whenever a file within DIR has been changed."
+USAGE="exec-on-change.sh DIR CMD [OPTIONS]
   DIR: Path to watch for changes
   CMD: Command to execute
 
   OPTIONS:
     --help, -h: Show this message"
-}
 
 ### ARGUMENT PARSING ###
 
 . "$(dirname "$0")/lib/parse_args.sh"
 
-#declare -a KEYWORDS=("--delimiter" "-d")
-parse_args "$@"
-
-if [[ " ${ARGS[*]} " =~ .*(" --help "|" -h ").* ]]
-then
-  print_usage
-  exit 0
-fi
+parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+set_trap 1 2
 
 if [[ ${#ARGS[@]} -ne 2 ]]
 then
