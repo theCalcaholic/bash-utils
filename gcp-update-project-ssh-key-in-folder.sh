@@ -36,7 +36,7 @@ do
   if ! [[ " $projects_blacklist " =~ .*" $project ".* ]]; 
   then 
     echo -e "\033[0;36m${project}\033[0m"
-    /opt/bash-utils/gcp-update-project-ssh-key.sh add "$project" "$user" "$ssh_public_key"; 
+    /opt/bash-utils/gcp-update-project-ssh-key.sh "$cmd" "$project" "$user" "$ssh_public_key"; 
   fi
 done
 
