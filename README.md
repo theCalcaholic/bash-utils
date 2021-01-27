@@ -1,6 +1,6 @@
 # A collection of scripts I have written over the years
+### anonymize-columns.sh
 
-anonymize-columns.sh
 ```yaml
 Replaces specific columns in a csv table with generic data in the same format
 by mapping '0-9' -> '0', 'a-z' -> 'a' and 'A-Z' -> 'A'
@@ -17,7 +17,8 @@ columns:
     -s, --skip-header Ignore (Don't change) first row table
 ```
 
-apt-install-temp.sh
+### apt-install-temp.sh
+
 ```yaml
 Install apt packages marked as 'auto'
 
@@ -25,7 +26,8 @@ USAGE:
   apt-install-temp package [package [...]]
 ```
 
-bundle-script.sh
+### bundle-script.sh
+
 ```yaml
 Bundles a script with it's dependencies (meant to be used for scripts from https://github.com/theCalcaholic/bash-utils)
 
@@ -36,7 +38,8 @@ USAGE:
   output: path to save the bundled script at.
 ```
 
-check-cert.sh
+### check-cert.sh
+
 ```yaml
 Get openssl information on x509_cert_file
 
@@ -44,7 +47,8 @@ USAGE:
   check-cert.sh x509_cert_file
 ```
 
-collect-bucket-permissions.sh
+### collect-bucket-permissions.sh
+
 ```yaml
 <No description found>
 
@@ -60,7 +64,8 @@ USAGE:
 Note: You need to be logged into gcloud (gcloud auth login) when executing this command!
 ```
 
-collect-service-account-keys.sh
+### collect-service-account-keys.sh
+
 ```yaml
 <No description found>
 
@@ -74,7 +79,8 @@ USAGE:
 Note: You need to be logged into gcloud (gcloud auth login) when executing this command!
 ```
 
-dyndns-update.sh
+### dyndns-update.sh
+
 ```yaml
 Checks for each configured dynDNS domain if it is pointing at the current ip and otherwise calls an http endpoint for updating it.
 
@@ -83,7 +89,8 @@ USAGE:
   (Configuration inside the script)
 ```
 
-exec-on-change.sh
+### exec-on-change.sh
+
 ```yaml
 <No description found>
 
@@ -91,7 +98,8 @@ USAGE:
   <No usage message found>
 ```
 
-gcp-list-projects-in-folder.sh
+### gcp-list-projects-in-folder.sh
+
 ```yaml
 Lists all projects contained in a GCP folder or its subfolders
 
@@ -101,7 +109,8 @@ USAGE:
   folder_id: The id of the root folder that should be searched
 ```
 
-gcp-update-project-ssh-key-in-folder.sh
+### gcp-update-project-ssh-key-in-folder.sh
+
 ```yaml
 <No description found>
 
@@ -119,7 +128,8 @@ USAGE:
   
 ```
 
-gcp-update-project-ssh-key.sh
+### gcp-update-project-ssh-key.sh
+
 ```yaml
 Replaces the ssh key for a specific user in the metadata of a Google Project
 
@@ -133,7 +143,17 @@ USAGE:
   ssh-public-key: The public key to replace the old one with
 ```
 
-git-replace-author.sh
+### generate-readme.sh
+
+```yaml
+<No description found>
+
+USAGE:
+  generate-readme.sh
+```
+
+### git-replace-author.sh
+
 ```yaml
 <No description found>
 
@@ -145,7 +165,8 @@ USAGE:
   new-email: The new author's email
 ```
 
-gs-touch.sh
+### gs-touch.sh
+
 ```yaml
 <No description found>
 
@@ -153,7 +174,8 @@ USAGE:
   Move file in GCS bucket in order to trigger events (e.g. for cloud functions)
 ```
 
-iperf-log.sh
+### iperf-log.sh
+
 ```yaml
 Checks the download and upload rates against a given target (where an iperf daemon needs to be running) and prints it in a parseable format together with the current gateway mac address (to allow filtering for networks)
 
@@ -167,7 +189,8 @@ USAGE:
     If the file $HOME/iperf_pw exists, it will be expected to contain a valid iperf password for the target host. Otherwise, the script will ask for the password interactively.
 ```
 
-keepass-mounter.sh
+### keepass-mounter.sh
+
 ```yaml
 Script to mount a network (e.g. sshfs/davfs) directory and subsequently start keepass with a vault in said directory
 
@@ -190,7 +213,8 @@ Example:
   keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups
 ```
 
-lower-vpn-priority.sh
+### lower-vpn-priority.sh
+
 ```yaml
 Lowers your VPNs default route priority to 101
 
@@ -199,43 +223,33 @@ USAGE:
   Requires
 ```
 
-prime-render-offload.sh
-```yaml
-```
+### prime-render-offload.sh
 
-reload_touchpad_driver_lenovo.sh
 ```yaml
-```
+### reload_touchpad_driver_lenovo.sh
 
-setup_secure_dump.sh
 ```yaml
-```
+### setup_secure_dump.sh
 
-show-gcs-bucket-modification-times.sh
 ```yaml
-```
+### show-gcs-bucket-modification-times.sh
 
-start-when-available.sh
 ```yaml
-```
+### start-when-available.sh
 
-toggle-ssh-jumpserver.sh
 ```yaml
-```
+### toggle-ssh-jumpserver.sh
 
-treediff.sh
 ```yaml
-```
+### treediff.sh
 
-virtual-mic.sh
 ```yaml
-```
+### virtual-mic.sh
 
-weaken_vpn.sh
 ```yaml
-```
+### weaken_vpn.sh
 
-whats_my_ip.sh
 ```yaml
-```
+### whats_my_ip.sh
 
+```yaml
