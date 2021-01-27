@@ -27,8 +27,9 @@ then
 fi
 
 ip route del $vpn_route
-ip route add "${vpn_route/metric +([0-9])/metric 101}" || {
-  echo "ERROR: Could not recreate vpn route! Your network device 'tun0' (hopefully your vpn) might not work correctly. If you encounter issues, try reconnecting."
+ip route add ${vpn_route/metric +([0-9])/metric 101} || {
+  echo "ERROR: Could not recreate vpn route! Your network device 'tun0' (hopefully your vpn) might not work correctly. If you encounter issues, try reconnecting.
+Alternatively, execute the command 'sudo ip route add ${vpn_route/metric +([0-9])/metric 101}' yourself."
   exit 3
 }
 
