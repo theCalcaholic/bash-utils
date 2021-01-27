@@ -54,3 +54,14 @@ print_description() {
 set_trap() {
   trap "[[ ' $* ' =~ \$? ]] && { echo ""; print_usage; }" EXIT 
 }
+
+wait_for_enter() {
+    while true
+    do
+        read -s -N 1 -t 1 key
+        if [[ "$key" == $'\x0a' ]]
+        then
+            break;
+        fi
+    done
+}
