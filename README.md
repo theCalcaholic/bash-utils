@@ -117,9 +117,10 @@ USAGE:
 USAGE:
   gcp-update-project-ssh-key-in-folder.sh [OPTIONS] command folder user ssh-public-key
 
-  command:        'add' if the user/public key should be added to projects where it doesn't exist yet or 'replace' if 
-                  existing ssh-public-keys for the user should be replaced
-  folder:         The id of the gcp folder which contains all projects that the ssh public key should be rolled out to
+  command:        'add' if the user/public key should be added to projects where it doesn't exist yet
+                  or 'replace' if existing ssh-public-keys for the user should be replaced
+  folder:         The id of the gcp folder which contains all projects that the ssh public key should
+                  be rolled out to
   user:           The ssh user
   ssh-public-key: The ssh public key
 
