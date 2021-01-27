@@ -20,7 +20,7 @@ columns:
 ### apt-install-temp.sh
 
 ```yaml
-Install apt packages marked as 'auto'
+Install apt packages and marks them as automatically installed (to allow easy removal via apt autoremove)
 
 USAGE:
   apt-install-temp package [package [...]]
@@ -253,6 +253,11 @@ USAGE:
 ### virtual-mic.sh
 
 ```yaml
+Sets up a virtual mic and output to allow e.g. sharing your system sound to a video call (using pulseaudio volume control)
+USAGE:
+  virtual-mic.sh
+```
+
 ### weaken_vpn.sh
 
 ```yaml

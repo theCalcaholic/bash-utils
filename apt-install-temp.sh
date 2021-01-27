@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 . "$(dirname "$0")/lib/parse_args.sh"
-parse_args __DESCRIPTION "Install apt packages marked as 'auto'" \
+parse_args __DESCRIPTION "Install apt packages and marks them as automatically installed (to allow easy removal via apt autoremove)" \
   __USAGE "apt-install-temp package [package [...]]" "$@"
 
 

@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# parse_args to trigger readme generator
+print_usage() {
+  echo "Sets up a virtual mic and output to allow e.g. sharing your system sound to a video call (using pulseaudio volume control)"
+  echo "USAGE:
+  virtual-mic.sh"
+}
+
+if [[ " $@ " =~ .*(" -h "|" --help ").* ]]
+then
+  print_usage
+  exit 0
+fi
 
 DEFAULT_SINK="$(pactl info | grep 'Default Sink:')"
 DEFAULT_SINK="${DEFAULT_SINK##*Default Sink: }"
