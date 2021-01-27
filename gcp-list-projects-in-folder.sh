@@ -15,11 +15,11 @@ items=("folders/$folder_id")
 debug=false
 i=0
 
-echo "Collecting folders recursively..." >&2
+echo "Searching folders recursively..." >&2
 
 while [[ $(( "$i" < "${#items[@]}" )) -eq 1 ]];
 do
-    echo "current: ${items[i]}" >&2
+    echo "Searching: ${items[i]}" >&2
     if [[ "${items[i]}" =~ "folders/".* ]]
     then
         $debug && echo "current (name): $(gcloud resource-manager folders  describe "${items[i]/#folders\//}" --format="get(displayName)")" >&2
