@@ -91,6 +91,48 @@ USAGE:
   <No usage message found>
 ```
 
+gcp-list-projects-in-folder.sh
+```yaml
+Lists all projects contained in a GCP folder or its subfolders
+
+USAGE:
+  gcp-list-projects-in-folder.sh folder_id
+
+  folder_id: The id of the root folder that should be searched
+```
+
+gcp-update-project-ssh-key-in-folder.sh
+```yaml
+<No description found>
+
+USAGE:
+  gcp-update-project-ssh-key-in-folder.sh [OPTIONS] command folder user ssh-public-key
+
+  command:        'add' if the user/public key should be added to projects where it doesn't exist yet or 'replace' if 
+                  existing ssh-public-keys for the user should be replaced
+  folder:         The id of the gcp folder which contains all projects that the ssh public key should be rolled out to
+  user:           The ssh user
+  ssh-public-key: The ssh public key
+
+  Options:
+    --blacklist  A space separated list of project ids to not rollout any ssh public keys to
+  
+```
+
+gcp-update-project-ssh-key.sh
+```yaml
+Replaces the ssh key for a specific user in the metadata of a Google Project
+
+USAGE:
+  gcp-replace-project-ssh-key.sh command project-id user ssh-public-key
+
+  command:        The command to perform. One of add (adds the key if there wasn't any
+                  configured for the given user yet), replace (replaces any old key of the user)
+  project-id:     The project containing the metadata to edit
+  user:           The ssh user name of the user of which to replace the public key
+  ssh-public-key: The public key to replace the old one with
+```
+
 git-replace-author.sh
 ```yaml
 <No description found>
@@ -146,6 +188,15 @@ USAGE:
 
 Example:
   keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups
+```
+
+lower-vpn-priority.sh
+```yaml
+Lowers your VPNs default route priority to 101
+
+USAGE:
+  lower-vpn-priority.sh
+  Requires
 ```
 
 prime-render-offload.sh
