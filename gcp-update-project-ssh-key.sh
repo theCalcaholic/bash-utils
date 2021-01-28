@@ -2,15 +2,24 @@
 
 . "$(dirname "$0")/lib/parse_args.sh"
 
-
+KEYWORDS=("--interactive")
 parse_args __DESCRIPTION "Replaces the ssh key for a specific user in the metadata of a Google Project" \
-    __USAGE "gcp-replace-project-ssh-key.sh command project-id user ssh-public-key
+    __USAGE "gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
   command:        The command to perform. One of add (adds the key if there wasn't any
                   configured for the given user yet), replace (replaces any old key of the user)
   project-id:     The project containing the metadata to edit
   user:           The ssh user name of the user of which to replace the public key
-  ssh-public-key: The public key to replace the old one with" "$@"
+  ssh-public-key: The public key to replace the old one with
+
+  Options:
+    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)" "$@"
+
+interactive="${KW_ARGS['--interactive']:-true}"
+
+project="${ARGS[1]?ERROR: Missing parameter: 'project'}"
+replace_user="${ARGS[2]?ERROR: Missing parameter: 'user'}"
+new_line="$replace_user:${ARGS[3]?ERROR: Missing parameter: 'ssh-public-key'} $replace_user"
 
 ssh_keys_old="$(mktemp)"
 ssh_keys_new="$(mktemp)"
@@ -24,9 +33,6 @@ cmd="${ARGS[0]?ERROR: Missing parameter: 'command'}"
   echo "ERROR: Invalid command '$cmd'"
   exit 1
 }
-project="${ARGS[1]?ERROR: Missing parameter: 'project'}"
-replace_user="${ARGS[2]?ERROR: Missing parameter: 'user'}"
-new_line="$replace_user:${ARGS[3]?ERROR: Missing parameter: 'ssh-public-key'} $replace_user"
 
 gcloud compute project-info describe \
     --project="$project" \
@@ -76,17 +82,21 @@ then
   echo "$new_line" >> "$ssh_keys_new"
 fi
 
-if ! cmp "$ssh_keys_old" "$ssh_keys_new"
+if ! cmp "$ssh_keys_old" "$ssh_keys_new" > /dev/null
 then
 
   echo "New ssh pubkeys file:"
   echo ""
   cat "$ssh_keys_new" | grep -e '^' -e '^.*:' --color
   echo ""
-  echo "Continue? (y/N)"
-  read choice
 
-  [[ "$choice" =~ ^(y|Y)$ ]] || { echo "User abort."; exit 0; }
+  if [[ "$interactive" != false ]]
+  then
+    echo "Continue? (y/N)"
+    read choice
+
+    [[ "$choice" =~ ^(y|Y)$ ]] || { echo "User abort."; exit 0; }
+  fi
 
   gcloud compute project-info add-metadata --project="$project" --verbosity debug --metadata-from-file ssh-keys="$ssh_keys_new"
 else
