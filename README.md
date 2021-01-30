@@ -236,24 +236,31 @@ USAGE:
 ### prime-render-offload.sh
 
 ```yaml
+```
 ### reload_touchpad_driver_lenovo.sh
 
 ```yaml
+```
 ### setup_secure_dump.sh
 
 ```yaml
+```
 ### show-gcs-bucket-modification-times.sh
 
 ```yaml
+```
 ### start-when-available.sh
 
 ```yaml
+```
 ### toggle-ssh-jumpserver.sh
 
 ```yaml
+```
 ### treediff.sh
 
 ```yaml
+```
 ### virtual-mic.sh
 
 ```yaml
@@ -265,6 +272,8 @@ USAGE:
 ### weaken_vpn.sh
 
 ```yaml
+```
 ### whats_my_ip.sh
 
 ```yaml
+```

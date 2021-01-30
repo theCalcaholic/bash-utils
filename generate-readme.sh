@@ -14,7 +14,7 @@ do
   echo '```yaml'
 
   # Exclude scripts not yet using my argument parser
-  grep 'parse_args' "$script" > /dev/null || continue
+  grep 'parse_args' "$script" > /dev/null || { echo '```'; continue; }
 
   "$script" -h
   echo '```'
