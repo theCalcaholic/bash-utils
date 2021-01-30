@@ -130,8 +130,9 @@ USAGE:
   ssh-public-key: The ssh public key
 
   Options:
-    --blacklist  A space separated list of project ids to not rollout any ssh public keys to
-  
+    --blacklist "project1 [project2 [...]]" A space separated list of project ids to not rollout any ssh public keys to
+    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)
+
 ```
 
 ### gcp-update-project-ssh-key.sh
@@ -140,13 +141,16 @@ USAGE:
 Replaces the ssh key for a specific user in the metadata of a Google Project
 
 USAGE:
-  gcp-replace-project-ssh-key.sh command project-id user ssh-public-key
+  gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
   command:        The command to perform. One of add (adds the key if there wasn't any
                   configured for the given user yet), replace (replaces any old key of the user)
   project-id:     The project containing the metadata to edit
   user:           The ssh user name of the user of which to replace the public key
   ssh-public-key: The public key to replace the old one with
+
+  Options:
+    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)
 ```
 
 ### generate-readme.sh
