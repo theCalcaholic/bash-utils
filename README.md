@@ -1,4 +1,33 @@
 # A collection of scripts I have written over the years
+## Table of Contents
+[anonymize-columns.sh](#anonymize-columns/sh)
+[apt-install-temp.sh](#apt-install-temp/sh)
+[bundle-script.sh](#bundle-script/sh)
+[check-cert.sh](#check-cert/sh)
+[collect-bucket-permissions.sh](#collect-bucket-permissions/sh)
+[collect-service-account-keys.sh](#collect-service-account-keys/sh)
+[dyndns-update.sh](#dyndns-update/sh)
+[exec-on-change.sh](#exec-on-change/sh)
+[gcp-list-projects-in-folder.sh](#gcp-list-projects-in-folder/sh)
+[gcp-update-project-ssh-key-in-folder.sh](#gcp-update-project-ssh-key-in-folder/sh)
+[gcp-update-project-ssh-key.sh](#gcp-update-project-ssh-key/sh)
+[generate-readme.sh](#generate-readme/sh)
+[git-replace-author.sh](#git-replace-author/sh)
+[gs-touch.sh](#gs-touch/sh)
+[iperf-log.sh](#iperf-log/sh)
+[keepass-mounter.sh](#keepass-mounter/sh)
+[lower-vpn-priority.sh](#lower-vpn-priority/sh)
+[prime-render-offload.sh](#prime-render-offload/sh)
+[reload_touchpad_driver_lenovo.sh](#reload_touchpad_driver_lenovo/sh)
+[setup_secure_dump.sh](#setup_secure_dump/sh)
+[show-gcs-bucket-modification-times.sh](#show-gcs-bucket-modification-times/sh)
+[start-when-available.sh](#start-when-available/sh)
+[toggle-ssh-jumpserver.sh](#toggle-ssh-jumpserver/sh)
+[treediff.sh](#treediff/sh)
+[virtual-mic.sh](#virtual-mic/sh)
+[weaken_vpn.sh](#weaken_vpn/sh)
+[whats_my_ip.sh](#whats_my_ip/sh)
+---
 ### anonymize-columns.sh
 
 ```yaml
