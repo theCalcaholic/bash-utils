@@ -8,10 +8,12 @@ parse_args __USAGE "generate-readme.sh" "$@"
 echo "# A collection of scripts I have written over the years"
 
 echo "## Table of Contents"
+echo ""
+
 for script in "$(dirname $0)/"*.sh;
 do
   scriptname="$(basename "$script")"
-  echo "[$scriptname](#${scriptname/\.//})"
+  echo "- [$scriptname](#${scriptname/\.//})"
 done
 
 echo "---"
