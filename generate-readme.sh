@@ -13,7 +13,7 @@ echo ""
 for script in "$(dirname $0)/"*.sh;
 do
   scriptname="$(basename "$script")"
-  echo "- [$scriptname](#${scriptname/\.//})"
+  echo "- [$scriptname](#${scriptname//\./})"
 done
 
 echo "---"
