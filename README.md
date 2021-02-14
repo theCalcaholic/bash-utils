@@ -26,7 +26,6 @@
 - [toggle-ssh-jumpserver.sh](#toggle-ssh-jumpserversh)
 - [treediff.sh](#treediffsh)
 - [virtual-mic.sh](#virtual-micsh)
-- [weaken_vpn.sh](#weaken_vpnsh)
 - [whats_my_ip.sh](#whats_my_ipsh)
 ---
 ### anonymize-columns.sh
