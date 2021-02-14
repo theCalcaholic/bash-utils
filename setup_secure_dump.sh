@@ -1,60 +1,30 @@
 #!/usr/bin/env bash
 
-print_help() {
-    echo "USAGE:"
-    echo "  setup_secure_dump [OPTIONS] [mount_point [container]]"
-    echo "  mount_point:"
-    echo "      The directory to mount the container to (must be empty or nonexistent)"
-    echo "  container:"
-    echo "      The location where the container image should be created (must not exist)"
-    echo ""
-    echo "  Options:"
-    echo "      -h, --help   Print this message"
-    echo "      -d, --delete Remove an existing container"
-    echo "      -s, --size   The size of the container (e.g. '1G', '500MB')"
-}
+USAGE="USAGE:
+  setup_secure_dump [OPTIONS]
 
-expected=""
-arg_mount_point=""
-arg_container=""
-arg_size=""
-DELETE=false
+  Options:
+      -m, --mount mountpoint    The directory to mount the container to 
+                                (must be empty or nonexistent)
+      -c, --container container The location where the container image should be created
+                                (must not exist if -d was not given)
+      -d, --delete              Remove an existing container
+      -s, --size                The size of the container (e.g. '1G', '500MB')
+      -h, --help                Print this help message"
 
-for arg in "$@"
-do
-    if [ "$expected" == "size" ]
-    then
-        arg_size="$arg"
-    fi
+. "$(dirname $BASH_SOURCE)/lib/parse_args.sh"
+KEYWORDS=("-m" "--mount" "-c" "--container" "-d;bool" "--delete;bool" "-s" "--size")
+parse_args __USAGE "$USAGE" "$@"
+set_trap 1 2
 
-    if [ ! -z "$expected" ]
-    then
-        expected=""
-        continue
-    elif [ "$arg" == "--size" ] || [ "$arg" == "-s" ]
-    then
-        expected="size"
-    elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
-    then
-        print_help
-        exit 0
-    elif [ "$arg" == "--delete" ] || [ "$arg" == "-d" ]
-    then
-        DELETE=true
-    elif [ -z "$arg_mount_point" ]
-    then
-        arg_mount_point="$arg"
-    elif [ -z "$arg_container" ]
-    then
-        arg_container="$arg"
-    fi
-done
+MOUNT_POINT="${KW_ARGS['-m']-$HOME/secure_dump}"
+MOUNT_POINT="${KW_ARGS['--mountpoint']-$MOUNT_POINT}"
+CONTAINER="${KW_ARGS['-c']-$HOME/secure_dump.img}"
+CONTAINER="${KW_ARGS['--container']-$CONTAINER}"
+SIZE="${KW_ARGS['-s']-1G}"
+SIZE="${KW_ARGS['--size']-$SIZE}"
 
-readonly MOUNT_POINT="${arg_mount_point:-$HOME/secure_dump}"
-readonly CONTAINER="${arg_container:-$HOME/secure_dump.img}"
-readonly SIZE="${arg_size:-1G}"
-
-if [[ "$DELETE" == "true" ]]
+if [[ "${KW_ARGS['--delete']-${KW_ARGS['-d']}}" == "true" ]]
 then
     echo "The existing container '$CONTAINER' will be deleted! Any data still saved in it will be lost!"
     if [[ ! -e "${CONTAINER}" ]]

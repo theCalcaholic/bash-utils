@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-. "$(dirname $0)/lib/parse_args.sh"
+. "$(dirname $BASH_SOURCE)/lib/parse_args.sh"
+declare -a REQUIRED=("x509_cert_file")
 set_trap 1 2
 parse_args __DESCRIPTION "Get openssl information on x509_cert_file" \
   __USAGE "check-cert.sh x509_cert_file" "$@"
 
-openssl x509 -in "$1" -text -noout
+openssl x509 -in "${NAMED_ARGS["x509_cert_file"]}" -text -noout
 

@@ -6,11 +6,11 @@ set -e
 shopt -s extglob
 
 USAGE="lower-vpn-priority.sh
-  Requires"
+
+  Must be executed as root"
 DESCRIPTION="Lowers your VPNs default route priority to 101"
 
-. "$(dirname "$0")/lib/parse_args.sh"
-#set_trap 1
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 
 if [[ "$EUID" -ne 0 ]]

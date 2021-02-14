@@ -16,19 +16,21 @@ USAGE="keepass-mounter.sh mount-point db-file [OPTIONS]
       -b, --backup  A path for storing a database backup
       -c, --command The command for executing keepass (defaults to the flatpak version of keepass).
                     '--DB_PATH--' will be replaced with the path to the password database.
+      -h, --help    Show this help message
 
 Example:
   keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups"
 
 set -e
-. "$(dirname "$0")/lib/parse_args.sh"
-set_trap 1 2
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 KEYWORDS=("-b" "--backup" "-c" "--command")
+REQUIRED=("mount-point" "db-file")
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+set_trap 1 2
 
-mount_path="${ARGS[0]?}"
+mount_path="${NAMED_ARGS['mount-point']}"
 mount_path="${mount_path%/}"
-vault_path="${ARGS[1]?}"
+vault_path="${NAMED_ARGS['db-file']}"
 
 keepass_cmd_pattern='flatpak run --file-forwarding org.keepassxc.KeePassXC @@ "--DB_PATH--" @@'
 keepass_cmd_pattern="${KW_ARGS["-c"]-$keepass_cmd_pattern}"

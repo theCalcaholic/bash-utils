@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# >parse_args< to trigger readme generator
 if [[ " $* " =~ .*(" -h "|" --help ").* ]]
 then
   echo "DESCRIPTION: Executes command with required environment variables to enable NVIDIA prime offload rendering."

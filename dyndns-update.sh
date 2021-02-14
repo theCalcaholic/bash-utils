@@ -6,7 +6,7 @@ USAGE="dydns-update.sh
   (Configuration inside the script)"
 
 set -e
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 set_trap 1 2
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 

@@ -17,7 +17,7 @@ USAGE="USAGE:
 
 Note: You need to be logged into gcloud (gcloud auth login) when executing this command!"
 
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 declare -a KEYWORDS=("-p" "--project" "-o" "--output" "--sa-project")
 set_trap 1 2
 parse_args __USAGE "$USAGE" "$@"

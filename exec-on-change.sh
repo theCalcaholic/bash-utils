@@ -3,29 +3,22 @@
 set -e
 
 DESCRIPTION="Execute CMD whenever a file within DIR has been changed."
-USAGE="exec-on-change.sh DIR CMD [OPTIONS]
-  DIR: Path to watch for changes
-  CMD: Command to execute
+USAGE="exec-on-change.sh directory command [OPTIONS]
+  directory: Path to watch for changes
+  command: Command to execute
 
   OPTIONS:
     --help, -h: Show this message"
 
 ### ARGUMENT PARSING ###
 
-. "$(dirname "$0")/lib/parse_args.sh"
-
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+REQUIRED=("directory" "command")
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 set_trap 1 2
 
-if [[ ${#ARGS[@]} -ne 2 ]]
-then
-  echo "ERROR: inotify_exec expects exactly two positional argument! Got: ${ARGS[*]@Q}"
-  print_usage
-  exit 1
-fi
-
-WATCH_DIR="${ARGS[0]}"
-CMD="${ARGS[1]}"
+WATCH_DIR="${NAMED_ARGS["directory"]}"
+CMD="${NAMED_ARGS["command"]}"
 
 ######
 

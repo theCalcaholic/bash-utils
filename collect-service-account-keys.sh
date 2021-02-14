@@ -14,7 +14,7 @@ Note: You need to be logged into gcloud (gcloud auth login) when executing this 
 
 set -e
 
-. "$(dirname $0)/lib/parse_args.sh"
+. "$(dirname $BASH_SOURCE)/lib/parse_args.sh"
 set_trap 1 2
 declare -a KEYWORDS=("-p" "--project")
 parse_args __USAGE "$USAGE" "$@"
