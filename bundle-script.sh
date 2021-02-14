@@ -7,18 +7,21 @@ USAGE="bundle-script.sh input output
   input:  path to the original script
   output: path to save the bundled script at."
 
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+declare -a REQUIRED=("input" "output")
 set_trap 1 2
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 
-input_script="${ARGS[0]?}"
-output_script="${ARGS[0]?}"
+input_script="${NAMED_ARGS["input"]}"
+output_script="${NAMED_ARGS["output"]}"
 
 cat <(sed '/lib\/parse_args.sh/,$d' < "$input_script") \
   <(echo "") \
-  <(echo "####################") \
-  "$(dirname "$0")/lib/parse_args.sh" \
-  <(echo "####################") \
+  <(echo "##### lib/parse_args.sh #####") \
+  <(echo -n ". <(echo '") \
+  <(cat "$(dirname "$0")/lib/parse_args.sh" | base64 -w 0) \
+  <(echo "' | base64 -d)") \
+  <(echo "#############################") \
   <(echo "") \
   <(sed '1,/lib\/parse_args.sh/d' < "$input_script") | tee "$output_script"
 

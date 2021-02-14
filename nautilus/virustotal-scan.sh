@@ -1,10 +1,46 @@
 #!/usr/bin/env bash
 
-set -x
+set -e
+
+USAGE="virustotal-scan.sh [OPTIONS]
+
+  Options:
+    --setup Start setup procedure
+    --help  Show this help message"
+
+DESCRIPTION="Uploads a file to be scanned on virustotal.com. Intended to be used as Nautilus Script"
+
+. "../lib/parse_args.sh"
+set_trap 1 2
+KEYWORDS=("--setup" "-s")
+parse_args _USAGE="$USAGE" _DESCRIPTION="$DESCRIPTION" "$@"
+
+if [[ " $KW_ARGS " =~ .*(" --setup "|" -s ").* ]]
+then
+    echo "==========================="
+    echo "== VIRUSTOTAL SCAN SETUP =="
+    echo "==========================="
+    echo ""
+    echo "In order to use virustotal-scan.sh you need to retrieve your own, personal API key for"\
+         " virustotal.com"
+    echo "Follow these steps, then press [ENTER]:"
+    echo ""
+    echo "1. Register at https://www.virustotal.com/gui/join-us"
+    echo "2. After registering and logging into Virustotal, open https://www.virustotal.com, "\
+         "click on your user name/icon on the upper right and select API key. This will bring "\
+         "you to the API key section in your profile."
+    echo ""
+    echo ""
+    echo "From there, copy your API key"
+    echo ""
+    echo "[ENTER] to continue..."
+    wait_for_enter 
+
+fi
 
 {
-
-VT_API_KEY="<YOUR API KEY>"
+#VT_API_KEY="9dd9356869174e04b85ceb78976ee57bfa83178b4d43b51faffddca4f4b9775f"
+#VT_API_KEY="<YOUR API KEY>"
 
 setup_guide_html=\
 "PGh0bWw+CiAgICA8aGVhZD4KICAgICAgICA8dGl0bGU+U2V0IHVwIHZpcnVzdG90YWwtc2Nhbi5z
@@ -28,7 +64,9 @@ YSBmaWxlIHdpdGhpbiBOYXV0aWx1cy4gWW91IHdpbGwgZmluZCBpdCBpbiB0aGUgY29udGV4dCBt
 ZW51IHVuZGVyICdTY3JpcHRzJy4KICAgICAgICAgICAgPC9saT4KICAgICAgICA8L29sPgogICAg
 PC9ib2R5Pgo8L2h0bWw+"
 
-if [[ "$VT_API_KEY" == "<YOUR API KEY>" ]]
+VT_API_KEY="$(secret-tool lookup virustotal apikey )"
+
+if [[ $? -ne 0 ]]
 then
     setup_guide_html_plain="$(echo "$setup_guide_html" | base64 -d)"
     DATA_URL="data:text/html,${setup_guide_html_plain/\{SCRIPT_PATH\}/$0}"

@@ -16,31 +16,19 @@ set -e
 
 ### ARGUMENT PARSING ###
 
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 
-declare -a KEYWORDS=("--delimiter" "-d")
+declare -a KEYWORDS=("--delimiter" "-d" "-s;bool" "--skip-header;bool")
+declare -a REQUIRED=("columns" "file")
 set_trap 1 2
 parse_args __DESCRIPTION "$DESCRIPTION" __USAGE "$USAGE" "$@"
 
-skip_header=0
-pos_arg_count=2
-if [[ " ${ARGS[*]} " =~ .*(" --skip-header "|" -s ").* ]]
-then
-  skip_header=1
-  pos_arg_count=3
-fi
+skip_header="${KW_ARGS["-s"]-false}"
+skip_header="${KW_ARGS["--skip-header"]-${skip_header}}"
 
-if [[ ${#ARGS[@]} -ne $pos_arg_count ]]
-then
-  echo "ERROR: anonymize-cols expects exactly two positional argument! Got: ${ARGS[*]@Q}"
-  #print_usage
-  #exit 0
-  exit 1
-fi
-
-
-columns="${ARGS[0]}"
-file="${ARGS[1]}"
+IFS=',' read -r -a columns <<<"${NAMED_ARGS["columns"]}"
+echo "columns: ${columns[@]}"
+file="${NAMED_ARGS["file"]}"
 delim="${KW_ARGS["-d"]-"|"}"
 delim="${KW_ARGS["--delimiter"]-"$delim"}"
 
@@ -50,10 +38,10 @@ exec 5< "$file"
 
 while read line <&5
 do
-    if [ "$skip_header" == "1" ]
+    if [ "$skip_header" == "true" ]
     then
         echo "$line"
-        skip_header=0
+        skip_header=false
         continue
     fi
 

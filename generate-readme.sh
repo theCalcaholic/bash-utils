@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 set -e
-. "$(dirname $0)/lib/parse_args.sh"
+. "$(dirname $BASH_SOURCE)/lib/parse_args.sh"
 set_trap 1 2
 parse_args __USAGE "generate-readme.sh" "$@"
 
 echo "# A collection of scripts I have written over the years"
 
-for script in "$(dirname $0)/"*.sh; 
+for script in "$(dirname $BASH_SOURCE)/"*.sh;
 do 
   echo "### $(basename "$script")"
   echo ""

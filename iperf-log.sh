@@ -10,14 +10,15 @@ USAGE="iperf-log.sh target username rsa-public-key-path
     If the file \$HOME/iperf_pw exists, it will be expected to contain a valid iperf password for the target host. Otherwise, the script will ask for the password interactively."
 
 set -e
-. "$(dirname "$0")/lib/parse_args.sh"
-set_trap 1 2
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+REQUIRED=("target" "username" "rsa-public-key-path")
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+set_trap 1 2
 
 
-TARGET="${ARGS[0]?}"
-USER="${ARGS[1]?}"
-PUB_KEY="${ARGS[2]?}"
+TARGET="${NAMED_ARGS["target"]}"
+USER="${NAMED_ARGS["username"]}"
+PUB_KEY="${NAMED_ARGS["rsa-public-key-path"]}"
 
 [[ -f "$HOME/iperf_pw" ]] && export IPERF3_PASSWORD="$(cat $HOME/iperf_pw)"
 

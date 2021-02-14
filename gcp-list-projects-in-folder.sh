@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-. "$(dirname "$0")/lib/parse_args.sh"
-set_trap 1 2
-
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+REQUIRED=("folder_id")
 parse_args __DESCRIPTION "Lists all projects contained in a GCP folder or its subfolders" \
     __USAGE "gcp-list-projects-in-folder.sh folder_id
 
   folder_id: The id of the root folder that should be searched" "$@"
+set_trap 1 2
 
-folder_id="${1?}"
+folder_id="${NAMED_ARGS["folder-id"]}"
 shift
 
 items=("folders/$folder_id")

@@ -1,88 +1,59 @@
 #!/usr/bin/env bash
 
-#
-# Shows you the modification times for all buckets in your google project (based on file modification
-# times or as a fallback bucket metadata).
-#
+
+DESCRIPTION="Shows you the modification times for all buckets in your google project (based on file modification times or as a fallback bucket metadata)."
 
 set -e
 
 LC_TIME=en_US.UTF-8
 
 
-print_usage() {
-    echo "show_bucket_access [OPTIONS]"
-    echo "Options:"
-    echo "    -f, --fetch Fetch bucket details before printing update times. If not specified, the details need to be present in the given path (see --path)"
-    echo "    -p, --project Fetch buckets from given project"
-    echo "    -d, --dir  Specifies the working directory (where the bucket info files will be downloaded to/are expected to be). Default is '.'"
-}
+USAGE="show_bucket_access [OPTIONS]
 
-trap print_usage 1
+Options:
+    -f, --fetch   Fetch bucket details before printing update times. If not specified, the details
+                  need to be present in the given path (see --dir)
+    -p, --project Fetch buckets from given project
+    -d, --dir     Specifies the working directory (where the bucket info files will be downloaded
+                  to/are expected to be). Default is '.'"
 
-path=""
-expected=""
-fetch=0
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+KEYWORDS=("-f;bool" "--fetch;bool" "-p" "--project" "-d" "--dir")
+parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
+set_trap 1 2
 
-for arg in $@
-do
-	if [ "$expected" == "dir" ]
-	then
-		path="$arg"
-    elif [ "$expected" == "project" ]
-    then
-        project="$arg"
-	fi
+gc_args=()
 
-    if [[ ! -z "$expected" ]]
-    then
-        expected=""
-        continue
-    fi
+path="${KW_ARGS['-d']-.}"
+path="${KW_ARGS['--dir']-$path}"
+path="${path%%/}"
 
-	if [ "$arg" == "--dir" ] || [ "$arg" == "-d" ]
-	then
-		expected='dir'
-	elif [ "$arg" == "--fetch" ] || [ "$arg" == "-f" ]
-	then
-		fetch=1
-	elif [ "$arg" == "--project" ] || [ "$arg" == "-p" ]
-	then
-	    expected="project"
-	elif [ "$arg" == "--help" ] || [ "$arg" == "-h" ]
-    then
-        print_usage
-		exit 0
-	fi
-done
+project="${KW_ARGS['--project']-${KW_ARGS['-p']}}"
+echo "project: $project"
 
-if [ -z "$path" ]
+if [[ -n "$project" ]]
 then
-	path="."
+  gc_args+=("-p" "$project")
 fi
 
-if [ ! -z "$project" ]
-then
-    project_arg="-p $project"
-fi
+fetch="${KW_ARGS['-f']-false}"
+fetch="${KW_ARGS['--fetch']-$fetch}"
 
-path=${path%%/}
-
-if [ "$fetch" == "1" ]
+if [[ "$fetch" == "true" ]]
 then
 	rm "$path"/*.info || true
 
 	echo "Fetching bucket details..."
-	for bucket in $(gsutil ls $project_arg)
+	for bucket in $(gsutil ls "${gc_args[@]}")
 	do
 		echo "Fetching bucket '$bucket'..."
 		echo "  Fetching Details..."
 		bucketname=${bucket//gs:\/\//}
 		bucketname=${bucketname//\//}
-		gsutil ls $project_arg -Lb $bucket
-		gsutil ls $project_arg -Lb $bucket >> "$path/$bucketname.info"
+		gsutil ls "${gc_args[@]}" -Lb $bucket
+		gsutil ls "${gc_args[@]}" -Lb $bucket >> "$path/$bucketname.info"
 		echo "  Fetching file update timestamps..."
-		file_dates=$( gsutil ls $project_arg -l "${bucket}**" \
+		file_dates=$( gsutil ls "${gc_args[@]}" -l "${bucket}**" \
 			| grep -v "TOTAL: " \
 			| tr -s " " \
 			| cut -d " " -f 3 \

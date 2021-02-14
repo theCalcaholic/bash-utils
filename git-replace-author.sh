@@ -8,14 +8,15 @@ USAGE="git-replace-author.sh old-email new-name new-email
   new-email: The new author's email"
 
 set -e
-. "$(dirname "$0")/lib/parse_args.sh"
-set_trap 1 2
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+REQUIRED=("old-email" "new-name" "new-email")
 parse_args __USAGE "$USAGE" "$@"
+set_trap 1 2
 
 
-export OLD_EMAIL=${ARGS[0]?}
-export CORRECT_NAME=${ARGS[1]?}
-export CORRECT_EMAIL=${ARGS[2]?}
+export OLD_EMAIL=${NAMED_ARGS['old-email']}
+export CORRECT_NAME=${NAMED_ARGS['new-name']}
+export CORRECT_EMAIL=${NAMED_ARGS['new-email']}
 
 git filter-branch --env-filter '
 

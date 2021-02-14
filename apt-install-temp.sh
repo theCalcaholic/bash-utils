@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
+declare -a REQUIRED=("package")
 parse_args __DESCRIPTION "Install apt packages and marks them as automatically installed (to allow easy removal via apt autoremove)" \
-  __USAGE "apt-install-temp package [package [...]]" "$@"
+  __USAGE "apt-install-temp.sh package [package [...]]" "$@"
 
 
 installed_pkgs="$(dpkg -l | grep '^ii' | awk '{print $2}')"
 declare installation_candidates
-for pkg in $@
+for pkg in "${NAMED_ARGS["package"]}" "${ARGS[@]}"
 do
   if [[ -z "$(echo "$installed_pkgs" | grep "^$pkg$")" ]]
   then

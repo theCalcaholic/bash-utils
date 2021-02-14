@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# parse_args to trigger readme generator
+# >parse_args< to trigger readme generator
 print_usage() {
   echo "Sets up a virtual mic and output to allow e.g. sharing your system sound to a video call (using pulseaudio volume control)"
   echo "USAGE:

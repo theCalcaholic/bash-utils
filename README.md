@@ -23,7 +23,7 @@ columns:
 Install apt packages and marks them as automatically installed (to allow easy removal via apt autoremove)
 
 USAGE:
-  apt-install-temp package [package [...]]
+  apt-install-temp.sh package [package [...]]
 ```
 
 ### bundle-script.sh
@@ -95,9 +95,9 @@ USAGE:
 Execute CMD whenever a file within DIR has been changed.
 
 USAGE:
-  exec-on-change.sh DIR CMD [OPTIONS]
-  DIR: Path to watch for changes
-  CMD: Command to execute
+  exec-on-change.sh directory command [OPTIONS]
+  directory: Path to watch for changes
+  command: Command to execute
 
   OPTIONS:
     --help, -h: Show this message
@@ -122,16 +122,16 @@ USAGE:
 USAGE:
   gcp-update-project-ssh-key-in-folder.sh [OPTIONS] command folder user ssh-public-key
 
-  command:        'add' if the user/public key should be added to projects where it doesn't exist yet
+  command         'add' if the user/public key should be added to projects where it doesn't exist yet
                   or 'replace' if existing ssh-public-keys for the user should be replaced
-  folder:         The id of the gcp folder which contains all projects that the ssh public key should
+  folder          The id of the gcp folder which contains all projects that the ssh public key should
                   be rolled out to
-  user:           The ssh user
-  ssh-public-key: The ssh public key
+  user            The ssh user
+  ssh-public-key  The ssh public key
 
   Options:
     --blacklist "project1 [project2 [...]]" A space separated list of project ids to not rollout any ssh public keys to
-    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)
+    --non-interactive Ask for confirmation before making any changes (disabling is potentially dangerous!)
 
 ```
 
@@ -143,14 +143,15 @@ Replaces the ssh key for a specific user in the metadata of a Google Project
 USAGE:
   gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
-  command:        The command to perform. One of add (adds the key if there wasn't any
-                  configured for the given user yet), replace (replaces any old key of the user)
-  project-id:     The project containing the metadata to edit
-  user:           The ssh user name of the user of which to replace the public key
-  ssh-public-key: The public key to replace the old one with
+  command             The command to perform. One of add (adds the key if there wasn't any
+                      configured for the given user yet), replace (replaces any old key of the user)
+  project-id          The project containing the metadata to edit
+  user                The ssh user name of the user of which to replace the public key
+  ssh-public-key      The public key to replace the old one with
 
   Options:
-    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)
+    --non-interactive Don't ask for confirmation before making any changes (potentially dangerous!)
+    --help            Show this help message
 ```
 
 ### generate-readme.sh
@@ -178,10 +179,12 @@ USAGE:
 ### gs-touch.sh
 
 ```yaml
-<No description found>
+Move file in GCS bucket in order to trigger events (e.g. for cloud functions)
 
 USAGE:
-  Move file in GCS bucket in order to trigger events (e.g. for cloud functions)
+  gs-touch.sh file-uri
+
+  file-uri gs uri for file, e.g. gs://my-storage-bucket/foo.bar
 ```
 
 ### iperf-log.sh
@@ -218,6 +221,7 @@ USAGE:
       -b, --backup  A path for storing a database backup
       -c, --command The command for executing keepass (defaults to the flatpak version of keepass).
                     '--DB_PATH--' will be replaced with the path to the password database.
+      -h, --help    Show this help message
 
 Example:
   keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups
@@ -230,37 +234,105 @@ Lowers your VPNs default route priority to 101
 
 USAGE:
   lower-vpn-priority.sh
-  Requires
+
+  Must be executed as root
 ```
 
 ### prime-render-offload.sh
 
 ```yaml
+DESCRIPTION: Executes command with required environment variables to enable NVIDIA prime offload rendering.
+USAGE:
+  prime_render_offload.sh command [args]
 ```
+
 ### reload_touchpad_driver_lenovo.sh
 
 ```yaml
+Usage: reload_touchpad_driver_lenovo.sh
+
+  Must be executed as root
 ```
+
 ### setup_secure_dump.sh
 
 ```yaml
+<No description found>
+
+USAGE:
+  USAGE:
+  setup_secure_dump [OPTIONS]
+
+  Options:
+      -m, --mount mountpoint    The directory to mount the container to 
+                                (must be empty or nonexistent)
+      -c, --container container The location where the container image should be created
+                                (must not exist if -d was not given)
+      -d, --delete              Remove an existing container
+      -s, --size                The size of the container (e.g. '1G', '500MB')
+      -h, --help                Print this help message
 ```
+
 ### show-gcs-bucket-modification-times.sh
 
 ```yaml
+Shows you the modification times for all buckets in your google project (based on file modification times or as a fallback bucket metadata).
+
+USAGE:
+  show_bucket_access [OPTIONS]
+
+Options:
+    -f, --fetch   Fetch bucket details before printing update times. If not specified, the details
+                  need to be present in the given path (see --dir)
+    -p, --project Fetch buckets from given project
+    -d, --dir     Specifies the working directory (where the bucket info files will be downloaded
+                  to/are expected to be). Default is '.'
 ```
+
 ### start-when-available.sh
 
 ```yaml
+Start given command as soon as a url can be reached
+
+USAGE:
+  Usage: start-when-available [OPTIONS][--delay time] [--batch] [--help|-h] url cmd
+
+  url
+    The url that needs to be available before executing the command
+  command
+    The command to be executed
+
+  Options:
+    -d, --delay time A minimum delay (in seconds) after which the command can be executed
+    -b, --batch      Use batch mode for executing the command (can help with system resource 
+                     consumption)
 ```
+
 ### toggle-ssh-jumpserver.sh
 
 ```yaml
+<No description found>
+
+USAGE:
+  toggle-ssh-jumpserver.sh command user jump-server-name
+
+  command
+    'enable' if the jump server should be enabled, else 'disable'
+  user
+    The user whose ssh config should be edited
+  jump-server
+    The name of the jump server to use. Needs to correspond to an entry in the user's ssh config
 ```
+
 ### treediff.sh
 
 ```yaml
+Compare two directory trees
+
+USAGE:
+  treediff.sh directory-1 directory-2
 ```
+
 ### virtual-mic.sh
 
 ```yaml
@@ -269,11 +341,11 @@ USAGE:
   virtual-mic.sh
 ```
 
-### weaken_vpn.sh
-
-```yaml
-```
 ### whats_my_ip.sh
 
 ```yaml
+Prints your public IP (by querying opendns or, as fallback, google's dns server)
+USAGE:
+  whats_my_ip.sh
 ```
+

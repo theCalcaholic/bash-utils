@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
 
-. "$(dirname "$0")/lib/parse_args.sh"
+. "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 
-KEYWORDS=("--interactive")
+KEYWORDS=("--non-interactive;bool")
+REQUIRED=("command" "project-id" "user" "ssh-public-key")
 parse_args __DESCRIPTION "Replaces the ssh key for a specific user in the metadata of a Google Project" \
     __USAGE "gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
-  command:        The command to perform. One of add (adds the key if there wasn't any
-                  configured for the given user yet), replace (replaces any old key of the user)
-  project-id:     The project containing the metadata to edit
-  user:           The ssh user name of the user of which to replace the public key
-  ssh-public-key: The public key to replace the old one with
+  command             The command to perform. One of add (adds the key if there wasn't any
+                      configured for the given user yet), replace (replaces any old key of the user)
+  project-id          The project containing the metadata to edit
+  user                The ssh user name of the user of which to replace the public key
+  ssh-public-key      The public key to replace the old one with
 
   Options:
-    --interactive true|false Ask for confirmation before making any changes (disabling is potentially dangerous!)" "$@"
+    --non-interactive Don't ask for confirmation before making any changes (potentially dangerous!)
+    --help            Show this help message" "$@"
 
-interactive="${KW_ARGS['--interactive']:-true}"
+project="${NAMED_ARGS["project-id"]}"
+replace_user="${NAMED_ARGS["user"]}"
+new_line="$replace_user:${NAMED_ARGS["ssh-public-key"]} $replace_user"
 
-project="${ARGS[1]?ERROR: Missing parameter: 'project'}"
-replace_user="${ARGS[2]?ERROR: Missing parameter: 'user'}"
-new_line="$replace_user:${ARGS[3]?ERROR: Missing parameter: 'ssh-public-key'} $replace_user"
+set -e
 
 ssh_keys_old="$(mktemp)"
 ssh_keys_new="$(mktemp)"
@@ -27,7 +29,7 @@ echo "Saving ssh keys to $ssh_keys_old"
 
 trap "[[ \$? -eq 0 ]] || { echo ""; print_usage; }; rm $ssh_keys_old $ssh_keys_new;" EXIT
 
-cmd="${ARGS[0]?ERROR: Missing parameter: 'command'}"
+cmd="${NAMED_ARGS["command"]}"
 [[ " add replace " =~ .*" $cmd ".* ]] || {
   echo""
   echo "ERROR: Invalid command '$cmd'"
@@ -90,7 +92,7 @@ then
   cat "$ssh_keys_new" | grep -e '^' -e '^.*:' --color
   echo ""
 
-  if [[ "$interactive" != false ]]
+  if [[ "$KW_ARGS['--non-interactive']" != 'true' ]]
   then
     echo "Continue? (y/N)"
     read choice
