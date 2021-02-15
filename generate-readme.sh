@@ -5,9 +5,9 @@ set -e
 set_trap 1 2
 parse_args __USAGE "generate-readme.sh" "$@"
 
-echo "# A collection of scripts I have written over the years"
+cat "$(dirname $BASH_SOURCE)/README_HEAD.md"
 
-echo "## Table of Contents"
+echo "## Scripts"
 echo ""
 
 for script in "$(dirname $0)/"*.sh;
@@ -18,7 +18,7 @@ done
 
 echo "---"
 
-for script in "$(dirname $0)/"*.sh; 
+for script in "$(dirname $BASH_SOURCE)/"*.sh;
 do 
   echo "### $(basename "$script")"
   echo ""
