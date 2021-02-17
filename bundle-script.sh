@@ -32,7 +32,7 @@ echo "" > "$output_script"
 line_no=1
 while read line
 do
-    if [[ "$line" =~ " "*("source "|". ").* ]]
+    if [[ "$line" =~ ^" "*("source "|". ").* ]]
     then
         source_path="${line##source+([[:space:]])}"
         source_path="${line##.+([[:space:]])}"
