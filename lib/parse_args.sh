@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
 
+__BASHARGS_DEBUG=
+
 get_type_if_exists() {
 
   local type cut
-  
-  
+  local debug="$__BASHARGS_DEBUG"
+  [[ -z "$debug" ]] || echo "get_type_if_exists $@" >&2 
+   
   if [[ "${1?}" == "kw-arg" ]] && [[ " ${KEYWORDS[*]} " =~ .*" ${2?}"(";"|" ").* ]]
   then
     cut="${KEYWORDS[*]}"
   elif [[ "${1?}" == "named-arg" ]] && [[ " ${REQUIRED[*]} " =~ .*" ${2?}"(";"|" ").* ]]
   then
-    cut="${REQUIRED[*]}"
+    cut=" ${REQUIRED[*]} "
   fi
 
   if [[ -n "$cut" ]]
   then
-    cut="${cut#*${2}}"
+    cut="${cut#* ${2}}"
+    [[ -z "$debug" ]] || echo "  1. |${cut}|" >&2
     if [[ "$cut" =~ ^";".* ]]
     then
-      #echo "1. |${cut}|"
       type="${cut%% *}"
-      #echo "2. |${type}|"
+      [[ -z "$debug" ]] || echo "  2. |${type}|" >&2
       type="${type#*;}"
-      #echo "3. |${type}|"
+      [[ -z "$debug" ]] || echo "  3. |${type}|" >&2
     fi
+    [[ -z "$debug" ]] || echo "  ${type:-string}" >&2
     echo -n "${type:-string}"
     return 0
   fi
 
+  [[ -z "$debug" ]] || echo "  not found" >&2
   return 1
     
 }
