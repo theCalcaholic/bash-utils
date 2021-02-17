@@ -4,7 +4,7 @@
 print_usage() {
   echo "Prints your public IP (by querying opendns or, as fallback, google's dns server)"
   echo "USAGE:
-  whats_my_ip.sh"
+  whats-my-ip.sh"
 }
 
 if [[ " $@ " =~ .*(" -h "|" --help ").* ]]
