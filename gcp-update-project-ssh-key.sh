@@ -4,8 +4,8 @@
 
 KEYWORDS=("--non-interactive;bool")
 REQUIRED=("command" "project-id" "user" "ssh-public-key")
-parse_args __DESCRIPTION "Replaces the ssh key for a specific user in the metadata of a Google Project" \
-    __USAGE "gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
+parse_args __DESCRIPTION "Replaces or updates the ssh key for a specific user in the metadata of a Google Project" \
+    __USAGE "gcp-update-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
   command             The command to perform. One of add (adds the key if there wasn't any
                       configured for the given user yet), replace (replaces any old key of the user)
