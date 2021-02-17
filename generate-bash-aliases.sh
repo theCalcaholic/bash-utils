@@ -19,8 +19,9 @@ then
     echo "" > "$output_file"
 fi
 
+echo "BASH_UTILS_PATH=\"\$(dirname \"\${BASH_SOURCE}\")\""
 for script in "$(dirname $BASH_SOURCE)"/*.sh
 do
-  echo "alias $(basename -s '.sh' "$script")='$(realpath "$script")'" | $output_cmd
+    echo "alias $(basename -s '.sh' "$script")=\"\$BASH_UTILS_PATH/$(basename "$script")\"" | $output_cmd
 done
 
