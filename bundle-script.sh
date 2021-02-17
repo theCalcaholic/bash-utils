@@ -23,7 +23,7 @@ output_script="${NAMED_ARGS["output"]}"
 
 if [[ "$(realpath $input_script)" == "$(realpath "$output_script")" ]]
 then
-    echo "ERROR: input and output scripts can't be equal!"
+    echo "ERROR: input and output scripts can't be equal!" >&2
     exit 1
 fi
 
@@ -39,7 +39,7 @@ do
         source_path="$(eval "echo ${source_path%%*([[:space:]])}")"
         source_path="$(realpath "$source_path")"
         [[ "$?" -eq 0 ]] && [[ -f "${source_path}" ]] || {
-            echo "ERROR: Something wen't wrong while analyzing source path in line ${line_no} (does the sourced file exist?):"
+            echo "ERROR: Something wen't wrong while analyzing source path in line ${line_no} (does the sourced file exist?):" >&2
             echo "> $line"
         }
         is_replaced="false"
@@ -75,7 +75,7 @@ check_args="${KW_ARGS['--check']-${KW_ARGS['-c']}}"
 if [[ -n "$check_args" ]]
 then
     bash "$output_script" $check_args > /dev/null 2>&1 || {
-        echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $?)!"
+        echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $?)!" >&2
         exit 2
     }
 fi
