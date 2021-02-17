@@ -9,12 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: |
+    - name: "Create release assets"
+      run: |
         set -x
         assets=()
         bundle_dir="$(mktemp -d)"
         for script in ./*.sh; do
-          bash ./bundle-script.sh --check '--help' "$script" "$bundle_dir/$script" ./lib/parse_args.sh
+          bash ./bundle-script.sh --check '--help' "$script" "$bundle_dir/$script" ./lib/parse_args.sh || exit 1
           assets+=("-a" "$bundle_dir/$script")
         done
         tag_name="${GITHUB_REF##*/}"
