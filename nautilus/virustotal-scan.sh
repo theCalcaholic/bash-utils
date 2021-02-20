@@ -39,8 +39,7 @@ then
 fi
 
 {
-#***REMOVED***
-#VT_API_KEY="<YOUR API KEY>"
+VT_API_KEY="<YOUR API KEY>"
 
 setup_guide_html=\
 "PGh0bWw+CiAgICA8aGVhZD4KICAgICAgICA8dGl0bGU+U2V0IHVwIHZpcnVzdG90YWwtc2Nhbi5z
