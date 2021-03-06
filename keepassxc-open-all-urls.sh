@@ -6,11 +6,13 @@ USAGE="keepassxc-open-all-urls.sh [OPTIONS] keepass-db
     keepass-db The path to the keepass database that should be parsed
 
     Options:
-      -b, --browser <browser-command> The command to launch your browser. Will be called as such: '<command> %url%'
-      -g, --group <group-path>        Only show password entries for the given group
-      -h, --help                      Show this message"
+      -b, --browser <browser-command>   The command to launch your browser. Will be called as such: '<command> %url%'
+      -c, --cli <keepassxc.cli-command> The command to execute keepassxc.cli. Not required if it can be found in your system PATH
+      -g, --group <group-path>          Only show password entries for the given group
+      -y, --noninteractive              Open all urls without waiting for user interaction
+      -h, --help                        Show this message"
 . "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
-KEYWORDS=("-b" "--browser" "-g" "--group")
+KEYWORDS=("-b" "--browser" "-g" "--group" "-c" "--cli" "-y;bool" "--noninteractive;bool")
 REQUIRED=("keepass-db")
 parse_args __DESCRIPTION "$DESCRIPTION" __USAGE "$USAGE" "$@"
 
@@ -59,8 +61,11 @@ do
         echo "Opening URL for entry \"$entry\"..."
         "${browser_cmd}" "$url"
     fi
-    echo "[Enter] to proceed..."
-    read -s
+    if [[ -z "${KW_ARGS['--noninteractive']-${KW_ARGS['-y']}}" ]]
+    then
+        echo "[Enter] to proceed..."
+        read -s
+    fi
 done 3< <(echo "$pw" \
             | keepassxc.cli ls -Rf ~/keepass_backup/personal_accounts.kdbx "${keepass_group-/}" \
             2> /dev/null)

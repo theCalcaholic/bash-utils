@@ -310,9 +310,11 @@ USAGE:
     keepass-db The path to the keepass database that should be parsed
 
     Options:
-      -b, --browser <browser-command> The command to launch your browser. Will be called as such: '<command> %url%'
-      -g, --group <group-path>        Only show password entries for the given group
-      -h, --help                      Show this message
+      -b, --browser <browser-command>   The command to launch your browser. Will be called as such: '<command> %url%'
+      -c, --cli <keepassxc.cli-command> The command to execute keepassxc.cli. Not required if it can be found in your system PATH
+      -g, --group <group-path>          Only show password entries for the given group
+      -y, --noninteractive              Open all urls without waiting for user interaction
+      -h, --help                        Show this message
 ```
 
 ### lower-vpn-priority.sh
