@@ -10,6 +10,14 @@ Simply clone this repository or download the scripts you need from this reposito
 
 Don't forget to set executable permissions (`chmod +x`). :)
 
+If you cloned it, you can add the following line to your ~/.bashrc:
+
+```sh
+. /path/to/cloned/repo/bash_aliases
+. /path/to/cloned/repo/bash_aliases_auto
+```
+
+That will give you bash aliases for all the scripts in the repo.
 
 ## Scripts
 
@@ -24,11 +32,13 @@ Don't forget to set executable permissions (`chmod +x`). :)
 - [gcp-list-projects-in-folder.sh](#gcp-list-projects-in-foldersh)
 - [gcp-update-project-ssh-key-in-folder.sh](#gcp-update-project-ssh-key-in-foldersh)
 - [gcp-update-project-ssh-key.sh](#gcp-update-project-ssh-keysh)
+- [generate-bash-aliases.sh](#generate-bash-aliasessh)
 - [generate-readme.sh](#generate-readmesh)
 - [git-replace-author.sh](#git-replace-authorsh)
 - [gs-touch.sh](#gs-touchsh)
 - [iperf-log.sh](#iperf-logsh)
 - [keepass-mounter.sh](#keepass-mountersh)
+- [keepassxc-open-all-urls.sh](#keepassxc-open-all-urlssh)
 - [lower-vpn-priority.sh](#lower-vpn-prioritysh)
 - [prime-render-offload.sh](#prime-render-offloadsh)
 - [reload_touchpad_driver_lenovo.sh](#reload_touchpad_driver_lenovosh)
@@ -38,7 +48,7 @@ Don't forget to set executable permissions (`chmod +x`). :)
 - [toggle-ssh-jumpserver.sh](#toggle-ssh-jumpserversh)
 - [treediff.sh](#treediffsh)
 - [virtual-mic.sh](#virtual-micsh)
-- [whats_my_ip.sh](#whats_my_ipsh)
+- [whats-my-ip.sh](#whats-my-ipsh)
 ---
 ### anonymize-columns.sh
 
@@ -73,10 +83,15 @@ USAGE:
 Bundles a script with it's dependencies (meant to be used for scripts from https://github.com/theCalcaholic/bash-utils)
 
 USAGE:
-  bundle-script.sh input output
+  bundle-script.sh [OPTIONS] input output [dependency [dependency [...]]]
 
-  input:  path to the original script
-  output: path to save the bundled script at.
+  input      path to the original script
+  output     path to save the bundled script at.
+  dependency path to a dependency to bundle
+
+  Options:
+    --check, -c If provided, the bundled script will be called with the given arguments to
+                check if it works (i.e. returns with exit code 0).
 ```
 
 ### check-cert.sh
@@ -179,10 +194,10 @@ USAGE:
 ### gcp-update-project-ssh-key.sh
 
 ```yaml
-Replaces the ssh key for a specific user in the metadata of a Google Project
+Replaces or updates the ssh key for a specific user in the metadata of a Google Project
 
 USAGE:
-  gcp-replace-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
+  gcp-update-project-ssh-key.sh [OPTIONS] command project-id user ssh-public-key
 
   command             The command to perform. One of add (adds the key if there wasn't any
                       configured for the given user yet), replace (replaces any old key of the user)
@@ -193,6 +208,18 @@ USAGE:
   Options:
     --non-interactive Don't ask for confirmation before making any changes (potentially dangerous!)
     --help            Show this help message
+```
+
+### generate-bash-aliases.sh
+
+```yaml
+<No description found>
+
+USAGE:
+  generate-bash-aliases.sh > bashrc
+
+  Options:
+    --output, -o path File to write to
 ```
 
 ### generate-readme.sh
@@ -210,11 +237,15 @@ USAGE:
 <No description found>
 
 USAGE:
-  git-replace-author.sh old-email new-name new-email
+  git-replace-author.sh [OPTIONS] old-email new-name new-email
 
   old-email: The email of the author to replace
   new-name: The new author's name
   new-email: The new author's email
+
+  Options:
+    -f, --force Overwrite the backup from a previous run
+    -h, --help  Show this help message
 ```
 
 ### gs-touch.sh
@@ -268,13 +299,32 @@ Example:
   keepass-mounter.sh /media/myUser/keepass myvault.kdbx -b ~/keepass-backups
 ```
 
+### keepassxc-open-all-urls.sh
+
+```yaml
+Interactively open the urls for all passwords within a keepass database file (requires keepassxc.cli)
+
+USAGE:
+  keepassxc-open-all-urls.sh [OPTIONS] keepass-db
+
+    keepass-db The path to the keepass database that should be parsed
+
+    Options:
+      -b, --browser <browser-command> The command to launch your browser. Will be called as such: '<command> %url%'
+      -g, --group <group-path>        Only show password entries for the given group
+      -h, --help                      Show this message
+```
+
 ### lower-vpn-priority.sh
 
 ```yaml
 Lowers your VPNs default route priority to 101
 
 USAGE:
-  lower-vpn-priority.sh
+  lower-vpn-priority.sh [OPTIONS]
+
+  Options:
+    -p, --priority <value> Sets the new route priority to the given value (default: 101)
 
   Must be executed as root
 ```
@@ -382,11 +432,11 @@ USAGE:
   virtual-mic.sh
 ```
 
-### whats_my_ip.sh
+### whats-my-ip.sh
 
 ```yaml
 Prints your public IP (by querying opendns or, as fallback, google's dns server)
 USAGE:
-  whats_my_ip.sh
+  whats-my-ip.sh
 ```
 
