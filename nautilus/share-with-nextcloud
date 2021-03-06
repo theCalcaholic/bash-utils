@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+nc_url="https://my-nextcloud.example"
+user="eddie"
+PW="123456"
+
+[[ -f "$HOME/.local/share/nautilus/.share-with-nextcloud.env" ]] \
+  && . "$HOME/.local/share/nautilus/.share-with-nextcloud.env"
+dav_url="$nc_url/remote.php/dav/files"
+
+#set -x
+
+create_nautilus_shares_directory() {
+  curl -X MKCOL -u "$user:$PW" "$dav_url/$user/nautilus-share" 2> /dev/null \
+    | grep '<s:message>The resource you tried to create already exists</s:message>' > /dev/null 2>&1
+
+  RESULT=("${PIPESTATUS[@]}")
+  if [[ "${RESULT[0]}" != 0 ]]
+  then
+    msg="An error occurred while creating directory nautilus-share"
+    echo "$msg" >&2
+    notify-send -a "share-with-nextcloud" "$msg"
+    exit 1
+  elif [[ "${RESULT[1]}" == 0 ]]
+  then
+    echo "Notice: The nautilus-share directory already exists" >&2
+  fi
+}
+
+upload_file() {
+  if curl -X PROPFIND -u "$user:$PW" "$dav_url/$user/nautilus-share/" -H "Depth: 1" 2> /dev/null | grep "$2" > /dev/null 2>&1
+  then
+    msg="A file named '$2' already exists in $nc_url/index.php/apps/files/?dir=nautilus-share !"
+    echo "$msg" >&2
+    notify-send -a "share-with-nextcloud" "$msg"
+    return 1
+  fi
+
+  # Upload file
+  curl -T "$1" -u "$user:$PW" "$dav_url/$user/nautilus-share/$2"
+}
+
+share_file() {
+  # Create pulic share
+  local url
+  url="$(curl -H "OCS-APIRequest: true" -u "$user:$PW" -H "Content-Type: application/json" -X POST \
+    --data "{\"path\": \"nautilus-share/$1\", \"shareType\": \"3\", \"publicUpload\": \"false\", \"permissions\": \"1\"}" \
+    "$nc_url/ocs/v2.php/apps/files_sharing/api/v1/shares" 2> /dev/null | grep '<url>')"
+  url="${url##*<url>}"
+  url="${url%%</url>*}"
+
+  if [[ -z "$url" ]]
+  then
+    msg="An error occurred while creating public share for file $file_name!"
+    echo "$msg" >&2
+    notify-send -a "share-with-nextcloud" "$msg"
+    return 1
+  else
+    echo "$url"
+  fi
+}
+
+{
+
+if [[ -z "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" ]]
+then
+  NAUTILUS_SCRIPT_SELECTED_FILE_PATHS="$1"
+fi
+create_nautilus_shares_directory
+
+while read -r file
+do
+  if [[ -f "$file" ]]
+  then
+    file_name="$(basename "$file")"
+
+    upload_file "$file" "$file_name" || exit 1
+    url="$(share_file "$file_name" || exit 2)"
+    xdg-open "$url"
+  fi
+
+done <<< "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS"
+
+} 2>&1 | tee ~/.share-with-nextcloud.log
