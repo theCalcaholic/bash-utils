@@ -18,6 +18,8 @@ parse_args __DESCRIPTION "$DESCRIPTION" __USAGE "$USAGE" "$@"
 
 browser_cmd="${KW_ARGS['-b']-}"
 browser_cmd="${KW_ARGS['--browser']-${browser_cmd}}"
+keepass_cli="${KW_ARGS['-c']-keepassxc.cli}"
+keepass_cli="${KW_ARGS['--cli']-$keepass_cli}}"
 keepass_group="${KW_ARGS['--group']-${KW_ARGS['-g']}}"
 
 set_trap 2
@@ -52,7 +54,7 @@ echo ""
 while read -r -u 3 entry
 do 
     url="$(echo "$pw" \
-            | keepassxc.cli show -a URL ~/keepass_backup/personal_accounts.kdbx "$entry" \
+            | "$keepass_cli" show -a URL "${NAMED_ARGS['keepass-db']}" "$entry" \
             2>/dev/null || true)"
     if [[ -z "$url" ]]
     then 
@@ -67,6 +69,6 @@ do
         read -s
     fi
 done 3< <(echo "$pw" \
-            | keepassxc.cli ls -Rf ~/keepass_backup/personal_accounts.kdbx "${keepass_group-/}" \
+            | "$keepass_cli" ls -Rf "${NAMED_ARGS['keepass-db']}" "${keepass_group-/}" \
             2> /dev/null)
 
