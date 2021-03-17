@@ -24,12 +24,12 @@ then
     echo "Please, check out either https://www.cryfs.org/ or https://nuetzlich.net/gocryptfs/"
     echo "These tools are easy to use and it shouldn't be hard to use them with a random key."
     echo ""
-    echo "For example, in order to do basically the same thing as this script with cryfs, just add the following code to your ~/.bashrc:
+    echo "For example, in order to do basically the same thing as this script with cryfs, just add the following code to your ~/.profile:
 if ! mountpoint -q -- "~/secure_dump"
 then
   [ -d ~/.secure_dump_enc ] && rm -r ~/.secure_dump_enc ~/secure_dump
   mkdir -p ~/.secure_dump_enc ~/.secure_dump
-  head -c 10 /dev/urandom | base64 | CRYFS_FRONTEND=noninteractive cryfs --allow-replaced-filesystem ~/.secure_dump_enc ~/secure_dump
+  head -c 64 /dev/urandom | base64 | CRYFS_FRONTEND=noninteractive cryfs --allow-replaced-filesystem ~/.secure_dump_enc ~/secure_dump
 fi
 "
     echo ""
