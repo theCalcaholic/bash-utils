@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 . "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
-REQUIRED=("folder_id")
+REQUIRED=("folder-id")
 parse_args __DESCRIPTION "Lists all projects contained in a GCP folder or its subfolders" \
     __USAGE "gcp-list-projects-in-folder.sh folder_id
 
