@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 USAGE="USAGE:
-  setup_secure_dump [OPTIONS]
+  setup-secure-dump [OPTIONS]
 
   Options:
       -m, --mount mountpoint    The directory to mount the container to 
@@ -13,9 +13,31 @@ USAGE="USAGE:
       -h, --help                Print this help message"
 
 . "$(dirname $BASH_SOURCE)/lib/parse_args.sh"
-KEYWORDS=("-m" "--mount" "-c" "--container" "-d;bool" "--delete;bool" "-s" "--size")
+KEYWORDS=("-m" "--mount" "-c" "--container" "-d;bool" "--delete;bool" "-s" "--size" "--i-really-want-to;bool")
 parse_args __USAGE "$USAGE" "$@"
 set_trap 1 2
+
+if [[ "${KW_ARGS['--i-really-want-to']}" != 'true' ]]
+then
+    echo "!!! DEPRECATION WARNING !!!"
+    echo "Since writing this script, I have found a (actually 2) way better and easier solution for the problem it tries to solve."
+    echo "Please, check out either https://www.cryfs.org/ or https://nuetzlich.net/gocryptfs/"
+    echo "These tools are easy to use and it shouldn't be hard to use them with a random key."
+    echo ""
+    echo "For example, in order to do basically the same thing as this script with cryfs, just add the following code to your ~/.bashrc:
+if ! mountpoint -q -- "~/secure_dump"
+then
+  [ -d ~/.secure_dump_enc ] && rm -r ~/.secure_dump_enc ~/secure_dump
+  mkdir -p ~/.secure_dump_enc ~/.secure_dump
+  head -c 10 /dev/urandom | base64 | CRYFS_FRONTEND=noninteractive cryfs --allow-replaced-filesystem ~/.secure_dump_enc ~/secure_dump
+fi
+"
+    echo ""
+    echo "Maybe I'll migrate the setup-secure-dump script rely on them at some point :)"
+    echo ""
+    echo "If you really insist on using this script, pass the parameter --i-really-want-to"
+    exit 0
+fi
 
 MOUNT_POINT="${KW_ARGS['-m']-$HOME/secure_dump}"
 MOUNT_POINT="${KW_ARGS['--mountpoint']-$MOUNT_POINT}"

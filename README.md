@@ -42,7 +42,7 @@ That will give you bash aliases for all the scripts in the repo.
 - [lower-vpn-priority.sh](#lower-vpn-prioritysh)
 - [prime-render-offload.sh](#prime-render-offloadsh)
 - [reload_touchpad_driver_lenovo.sh](#reload_touchpad_driver_lenovosh)
-- [setup_secure_dump.sh](#setup_secure_dumpsh)
+- [setup-secure-dump.sh](#setup-secure-dumpsh)
 - [show-gcs-bucket-modification-times.sh](#show-gcs-bucket-modification-timessh)
 - [start-when-available.sh](#start-when-availablesh)
 - [toggle-ssh-jumpserver.sh](#toggle-ssh-jumpserversh)
@@ -347,14 +347,14 @@ Usage: reload_touchpad_driver_lenovo.sh
   Must be executed as root
 ```
 
-### setup_secure_dump.sh
+### setup-secure-dump.sh
 
 ```yaml
 <No description found>
 
 USAGE:
   USAGE:
-  setup_secure_dump [OPTIONS]
+  setup-secure-dump [OPTIONS]
 
   Options:
       -m, --mount mountpoint    The directory to mount the container to 
