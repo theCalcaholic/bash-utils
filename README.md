@@ -92,6 +92,7 @@ USAGE:
   Options:
     --check, -c If provided, the bundled script will be called with the given arguments to
                 check if it works (i.e. returns with exit code 0).
+    --gzip, -z  Use additional gzip compression for bundled scripts
 ```
 
 ### check-cert.sh
