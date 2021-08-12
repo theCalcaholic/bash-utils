@@ -10,11 +10,12 @@ USAGE="bundle-script.sh [OPTIONS] input output [dependency [dependency [...]]]
 
   Options:
     --check, -c If provided, the bundled script will be called with the given arguments to
-                check if it works (i.e. returns with exit code 0)."
+                check if it works (i.e. returns with exit code 0).
+    --gzip, -z  Use additional gzip compression for bundled scripts"
 
 . "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 REQUIRED=("input" "output")
-KEYWORDS=("--check" "-c")
+KEYWORDS=("--check" "-c" "--gzip;bool" "-z;bool")
 set_trap 1
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 
@@ -53,8 +54,15 @@ do
                   source_file="$(basename "${source_path}")"
                   echo "##### ${source_file} #####"
                   echo -n "source <(echo '"
-                  cat "${source_path}" | base64 -w 0
-                  echo "' | base64 -d)"
+                  if [[ -z "${KW_ARGS['--gzip']-"${KW_ARGS['-z']}"}" ]]
+                  then
+                    base64 -w 0 "$source_path"
+                  else
+                    gzip -cq "$source_path" | base64 -w 0
+                  fi
+                  echo -n "' | base64 -d"
+                  [[ -z "${KW_ARGS['--gzip']-"${KW_ARGS['-z']}"}" ]] || echo -n " | gunzip -cq"
+                  echo ")"
                   echo -n "######"
                   for n in $(seq ${#source_file}); do echo -n "#"; done
                   echo "######"
@@ -74,6 +82,7 @@ done < "$input_script"
 check_args="${KW_ARGS['--check']-${KW_ARGS['-c']}}"
 if [[ -n "$check_args" ]]
 then
+    bash "$output_script" $check_args || true
     bash "$output_script" $check_args > /dev/null 2>&1 || {
         echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $?)!" >&2
         exit 2
