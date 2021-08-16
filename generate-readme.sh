@@ -27,7 +27,12 @@ do
   # Exclude scripts not yet using my argument parser
   grep 'parse_args' "$script" > /dev/null || { echo '```'; continue; }
 
-  "$script" -h
+  rc=0
+  "$script" -h || rc=$?
+  [[ $rc -eq 0 ]] || [[ $rc -eq 50 ]] || {
+    echo "An error occured while generating usage instructions for $script. Exiting..." >&2
+    exit $rc
+  }
   echo '```'
   echo ""
 done

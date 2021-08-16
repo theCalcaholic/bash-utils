@@ -27,6 +27,7 @@ That will give you bash aliases for all the scripts in the repo.
 - [check-cert.sh](#check-certsh)
 - [collect-bucket-permissions.sh](#collect-bucket-permissionssh)
 - [collect-service-account-keys.sh](#collect-service-account-keyssh)
+- [du-tool.sh](#du-toolsh)
 - [dyndns-update.sh](#dyndns-updatesh)
 - [exec-on-change.sh](#exec-on-changesh)
 - [gcp-list-projects-in-folder.sh](#gcp-list-projects-in-foldersh)
@@ -134,6 +135,16 @@ USAGE:
       -p, --project project_id Use the specified project instead of your gcloud default
 
 Note: You need to be logged into gcloud (gcloud auth login) when executing this command!
+```
+
+### du-tool.sh
+
+```yaml
+Lists sorted, human-readable sizes of subdirectories
+
+USAGE:
+  du-tool.sh [PATH] 
+    PATH             The path to analyze
 ```
 
 ### dyndns-update.sh
