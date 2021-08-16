@@ -16,7 +16,7 @@ jobs:
         bundle_dir="$(mktemp -d)"
         for script in ./*.sh; do
           bash ./bundle-script.sh --gzip --check '--help' "$script" "$bundle_dir/$script" ./lib/parse_args.sh \
-            || bash ./bundle-script.sh --gzip --check '--help' "$script" "$bundle_dir/$script" ./lib/parse_args_v2.sh || exit 1
+            || bash ./bundle-script.sh --gzip --check '--help' --exit 50 "$script" "$bundle_dir/$script" ./lib/parse_args_v2.sh || exit 1
           assets+=("-a" "$bundle_dir/$script")
         done
         tag_name="${GITHUB_REF##*/}"

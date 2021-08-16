@@ -11,11 +11,12 @@ USAGE="bundle-script.sh [OPTIONS] input output [dependency [dependency [...]]]
   Options:
     --check, -c If provided, the bundled script will be called with the given arguments to
                 check if it works (i.e. returns with exit code 0).
-    --gzip, -z  Use additional gzip compression for bundled scripts"
+    --gzip, -z  Use additional gzip compression for bundled scripts
+    --exit, -e  The expected exit code if the script is working (requires --check)"
 
 . "$(dirname "$BASH_SOURCE")/lib/parse_args.sh"
 REQUIRED=("input" "output")
-KEYWORDS=("--check" "-c" "--gzip;bool" "-z;bool")
+KEYWORDS=("--check" "-c" "--exit" "-e" "--gzip;bool" "-z;bool")
 set_trap 1
 parse_args __USAGE "$USAGE" __DESCRIPTION "$DESCRIPTION" "$@"
 
@@ -82,10 +83,15 @@ done < "$input_script"
 check_args="${KW_ARGS['--check']-${KW_ARGS['-c']}}"
 if [[ -n "$check_args" ]]
 then
-    bash "$output_script" $check_args || true
-    bash "$output_script" $check_args > /dev/null 2>&1 || {
+    rc=0
+    expected="${KW_ARGS['-e']:-0}"
+    expected="${KW_ARGS['--exit']-$expected}"
+
+    bash "$output_script" $check_args > /dev/null 2>&1 || rc=$?
+    if [[ $rc -ne $expected ]]
+    then
         echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $?)!" >&2
         exit 2
-    }
+    fi
 fi
 
