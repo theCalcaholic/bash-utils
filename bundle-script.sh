@@ -32,7 +32,8 @@ fi
 shopt -s extglob
 echo "" > "$output_script"
 line_no=1
-while read line
+
+while IFS= read -r line
 do
     if [[ "$line" =~ ^" "*("source "|". ").* ]]
     then
@@ -88,9 +89,9 @@ then
     expected="${KW_ARGS['--exit']-$expected}"
 
     bash "$output_script" $check_args > /dev/null 2>&1 || rc=$?
-    if [[ $rc -ne $expected ]]
+    if [[ "$rc" -ne "$expected" ]]
     then
-        echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $?)!" >&2
+        echo "ERROR: The bundled script doesn't seem to work ('bash \"$output_script\" $check_args' terminated with exit code $rc not $expected)!" >&2
         exit 2
     fi
 fi
