@@ -27,9 +27,11 @@ That will give you bash aliases for all the scripts in the repo.
 - [check-cert.sh](#check-certsh)
 - [collect-bucket-permissions.sh](#collect-bucket-permissionssh)
 - [collect-service-account-keys.sh](#collect-service-account-keyssh)
+- [delete-bridge.sh](#delete-bridgesh)
 - [du-tool.sh](#du-toolsh)
 - [dyndns-update.sh](#dyndns-updatesh)
 - [exec-on-change.sh](#exec-on-changesh)
+- [fp-nvim-launcher.sh](#fp-nvim-launchersh)
 - [gcp-list-projects-in-folder.sh](#gcp-list-projects-in-foldersh)
 - [gcp-update-project-ssh-key-in-folder.sh](#gcp-update-project-ssh-key-in-foldersh)
 - [gcp-update-project-ssh-key.sh](#gcp-update-project-ssh-keysh)
@@ -138,6 +140,15 @@ USAGE:
 Note: You need to be logged into gcloud (gcloud auth login) when executing this command!
 ```
 
+### delete-bridge.sh
+
+```yaml
+Deletes given bridge
+
+USAGE:
+  delete-bridge.sh bridge-id
+```
+
 ### du-tool.sh
 
 ```yaml
@@ -170,6 +181,15 @@ USAGE:
 
   OPTIONS:
     --help, -h: Show this message
+```
+
+### fp-nvim-launcher.sh
+
+```yaml
+Script to rund the flatpak version of nvim and give it arbitrary permissions for the target (file or directory) path
+
+USAGE:
+  fp-nvim-launcher.sh target-path
 ```
 
 ### gcp-list-projects-in-folder.sh
