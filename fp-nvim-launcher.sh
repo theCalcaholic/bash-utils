@@ -21,7 +21,9 @@ keepass_cmd_pattern="${KW_ARGS["-c"]-$keepass_cmd_pattern}"
 keepass_cmd_pattern="${KW_ARGS["--command"]-$keepass_cmd_pattern}"
 
 
-export FLATPAK_ENABLE_SDK_EXT=typescript,rust-stable,rust-nightly,php82,openjdk17,openjdk,node18,llvm16,golang
+export FLATPAK_ENABLE_SDK_EXT="typescript,rust-stable,rust-nightly,php82,openjdk17,openjdk,node18,llvm16,golang"
 
-flatpak run --filesystem="${target_path}" --user io.neovim.nvim 2> >(grep -v 'app/io.neovim.nvim/x86_64/stable not installed' >&2) || flatpak run --filesystem="${target_path}" io.neovim.nvim "${target_path}"
+args=(--env=PATH="/app/bin:/usr/bin:$HOME/.cargo/bin" --filesystem="${target_path}" io.neovim.nvim "${target_path}")
+flatpak run --user "${args[@]}" 2> >(grep -v 'app/io.neovim.nvim/x86_64/stable not installed' >&2) \
+    || flatpak run "${args[@]}"
 
