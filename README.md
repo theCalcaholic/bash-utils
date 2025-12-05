@@ -45,6 +45,7 @@ That will give you bash aliases for all the scripts in the repo.
 - [lower-vpn-priority.sh](#lower-vpn-prioritysh)
 - [prime-render-offload.sh](#prime-render-offloadsh)
 - [reload_touchpad_driver_lenovo.sh](#reload_touchpad_driver_lenovosh)
+- [rotating-backup.sh](#rotating-backupsh)
 - [setup-secure-dump.sh](#setup-secure-dumpsh)
 - [show-gcs-bucket-modification-times.sh](#show-gcs-bucket-modification-timessh)
 - [start-when-available.sh](#start-when-availablesh)
@@ -378,6 +379,22 @@ USAGE:
 Usage: reload_touchpad_driver_lenovo.sh
 
   Must be executed as root
+```
+
+### rotating-backup.sh
+
+```yaml
+Create backups of the specified files in target directory
+
+USAGE:
+  rotating-backup.sh [-k|--keep] [-d|--dayly] [-o|--hourly] files backup_directory 
+    files            The files to backup
+    backup_directory The path to the directory where the backups should be stored
+
+  OPTIONS:
+    -d <number>, --dayly <number>     <number> of daily backups to keep (default: 7)
+    -o <number>, --hourly <number>    <number> of hourly backups to keep (default: 12)
+    -k <number>, --keep <number>      <number> of backups to keep per run (default: 3)
 ```
 
 ### setup-secure-dump.sh

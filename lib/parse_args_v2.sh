@@ -152,7 +152,7 @@ print_usage() {
     declare -a extra_args
     for arg in "${!USAGE[@]}"
     do
-      if ! [[ " $REQUIRED " =~ .*" $arg ".* ]] && ! [[ " ${KEYWORDS[@]/%;*/} " =~ .*(" "|"|")"$arg"(" "|"|").* ]] 
+      if ! [[ " ${REQUIRED[*]} " =~ .*" $arg ".* ]] && ! [[ " ${KEYWORDS[@]/%;*/} " =~ .*(" "|"|")"$arg"(" "|"|").* ]] 
       then
         extra_args+=("$arg")
       fi
@@ -183,6 +183,7 @@ print_usage() {
     declare -A usage
     for key in "${!USAGE[@]}"
     do
+      [[ "$key" != "COMMAND" ]] || continue
       usage["$key"]="${USAGE["$key"]}"
     done
 
